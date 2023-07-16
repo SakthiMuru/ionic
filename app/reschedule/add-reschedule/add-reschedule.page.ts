@@ -17,171 +17,198 @@ export interface UserPhoto {
   styleUrls: ['./add-reschedule.page.scss'],
 })
 export class AddReschedulePage implements OnInit {
-  array_reporter_list_of_issues:any;
+  a_reporter_name:any= '';
   t_date = new Date().toISOString();
-  public photos:any = [];
+  isDisabled:boolean = true;
+  array_reporter_team :any;
+  array_reporter_list_of_issues:any;
+  public photos:any = ''
   public photoss:any = [];
   photo_list:any;
   post_method:any = [];
-  formGroup!: FormGroup;
-  reporterId!:FormControl;
+  myGroup!: FormGroup;
+  reporterTeamId!:FormControl;
   issueName!:FormControl;
-  targetDate!: FormControl;
+  name!: FormControl;
+  reporteeTeamId!: FormControl;
   briefIf!: FormControl;
   visible:boolean = false;
-  birthDate:any;
   id:any;
   isShown: boolean = true;
   ishide: boolean = true;
-  countermeasure_brief_if!: FormControl;
+  reportee_ishide: boolean = true
+  reportee_isShown: boolean = true;
+  reportee_ishow: boolean = true;
   a_list:any;
+  isupdate = false;
   isview = false;
   ishideview = true;
-  isupdate = false;
-  public ImgUrl:any;
-  filter_response :any[] = [];
-  array_reporter_team :any;
-  reporter_id:any;
+  filter_response :any;
+  choice = 'Family';
+  public arr = new Array(25);
+  private reporter_id:any;
   all_team_list:any;
-  isDisabled:boolean = true;
+  product_all_team_list:any;
+  reporterId:any;
+  issueTargetDate:any;
   constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.t_date = new Date().toISOString();
-    this.FormControls();
-
+    this.reporter_team_list();
+    this.report_team_list();
     this.route.params.subscribe(params => {   
       this.id = params['id'];
    });
    this.route.params.subscribe(params => {
-    this.a_list = params['view'];
-  });
+     this.a_list = params['view'];
+   });
+
    if (this.a_list !== "edit" && this.a_list !== "view") {
-      this.ishide = ! this.isShown;
-    }
+     this.ishide = ! this.isShown;
+   }
    if (this.a_list == "view") {
      this.id_get();
      this.isview = true;
      this.ishideview = false;
      this.isShown = ! this.isShown;
    }else if (this.a_list == "edit") {
-    this.isview = false;
-     this.ishideview = true;
     this.id_get();
+    this.visible = true;
+    this.isDisabled = false;
      this.isupdate = true;
      this.ishide = ! this.isShown;
      
-   } 
-
+   }
+    this.FormControls();
   }
 
-  ionViewWillEnter(){
-    this.reporter_team_list();
-  }
-   
-   //reporter get method 
-   reporter_team_list(){
+  //reporter get method 
+  reporter_team_list(){
     this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
       this.filter_response = response;
       this.all_team_list = response;
     });
     }
+ 
+     //team get method 
+     report_team_list(){
+      this.apiService.getMethodwithToken(`/Masters/ReporteeTeams`).subscribe((response: any) => {
+        this.product_all_team_list = response;
+      });
+      }
 
+  ionViewWillEnter(){}
+  
   //id get method
   id_get(){
     this.apiService.getMethodwithToken(`/Reportees/${this.id}`).subscribe((response: any) => {
-      console.log('res1234',response)
     const employee = response;
-    this.reporterId.setValue(employee.reporterId);
+    this.reporterTeamId.setValue(employee.reporterTeamId.toString());
     this.issueName.setValue(employee.issueName);
-    this.t_date = employee.targetDate;
-    console.log('sdsdsds',employee.targetDate)
+    this.name.setValue(employee.name);
+    this.t_date = employee.issueTargetDate;
+    this.reporteeTeamId.setValue(employee.reporteeTeamId.toString());
     this.briefIf.setValue(employee.briefIf);
-    // this.countermeasure_brief_if.setValue(employee.countermeasure_brief_if);
-    console.log('this.filter_response',this.filter_response);
-    var searchlist = this.filter_response.filter((x:any) => x.team == employee.reporterId);
-    this.array_reporter_list_of_issues = searchlist;
+    this.photos = employee.resolveImage;
+    // this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+    //   var searchlist = response.filter((x:any) => x.reporterTeamId == employee.reporterTeamId);
+    //   this.array_reporter_list_of_issues = searchlist[0].issueList;
+    // });
     });
   }
-  
   triggerEvent(data:any){
+    console.log('data',data.target.value)
     this.isDisabled = false;
     this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+      console.log('response',response)
       var searchlist = response.filter((x:any) => x.reporterTeamId == data.target.value);
-      this.array_reporter_list_of_issues = searchlist[0].issueList;
+      console.log('searchlist',searchlist)
+      this.array_reporter_list_of_issues = searchlist[0].reporters;
+      console.log('this.array_reporter_list_of_issues',this.array_reporter_list_of_issues)
     });
   }
+
+  briefifEvent(data:any){
+  this.reporterId = data.target.value.id;
+  this.issueTargetDate = data.target.value.targetDate;
+  }
+  
   FormControls() {
-    this.reporterId = new FormControl('', [Validators.required]);
+    this.reporterTeamId = new FormControl('', [Validators.required]);
     this.issueName = new FormControl('', [Validators.required]);
-    this.targetDate = new FormControl('', [Validators.required]);
+    this.issueTargetDate = new FormControl('', [Validators.required]);
+    this.name = new FormControl('', [Validators.required]);
+    this.reporteeTeamId = new FormControl('', [Validators.required]);
     this.briefIf = new FormControl('', [Validators.required]);
-    this.formGroup = new FormGroup({
-      reporterId:this.reporterId,
+    this.myGroup = new FormGroup({
+      reporterTeamId:this.reporterTeamId,
       issueName:this.issueName,
-      targetDate: this.targetDate,
+      issueTargetDate:this.issueTargetDate,
+      name: this.name,
+      reporteeTeamId: this.reporteeTeamId,
       briefIf: this.briefIf
+
     });
   }
+
   submit() {
-    console.log('this.formGroup.value',this.formGroup.value)
-    if (this.formGroup.invalid) {
-      // this.message = 'Invalid data';
-      return;
+        if (this.myGroup.invalid) {
+          // this.message = 'Invalid data';
+          return;
+        }
+    if (this.photos == '') {
+      this.photos = {
+        "resolveImage": '',
+      };
     }
-    console.log('111',typeof this.formGroup.value.targetDate)
-    console.log('222',this.formGroup.value.targetDate)
-    
-    console.log('this.a_list1234567',this.a_list)
-    let employee = {
-      "reporter_id": this.reporter_id,
-      ...this.formGroup.value
-  };
-  console.log('employee',employee)
-    if (this.a_list == 'edit') {
-      if (this.formGroup.value !== undefined) {
-        console.log('edit',this.photo_list)
-         this.edit(employee,this.id);
-      } 
-    }
-    // else{
-    //   if (this.formGroup.value !== undefined) {
-    //     this.post(employee);
-    //   } 
-    // }
+        if (this.myGroup.value !== undefined) {
+          let employee = {
+            "reporterId":this.reporterId,
+            "issueTargetDate":this.issueTargetDate,
+            "resolveImage": this.photo_list,
+            ...this.myGroup.value
+        };
+          var all_data = Object(employee);
+          var a_data = Object.create(all_data.issueName);
+          all_data.issueName = a_data.briefIf;
+        if (this.a_list == 'edit') {
+          if (this.myGroup.value !== undefined) {
+            this.edit(employee,this.id);
+          } 
+        }else{
+          if (this.myGroup.value !== undefined) {
+            this.post(employee);
+          } 
+        }
+        } 
       }
-      // post(list:any){
-      //   console.log("list123",list)
-      //     this.apiService.post('/Reportees/Reschedules',list).subscribe((response: any) => {
-      //       console.log("3333444555",response)
-      //       this.router.navigate(['/reschedule']);
-      //       this.formGroup.reset();
-      //       this.visible = false;
-      //       this.t_date = new Date().toISOString();
-      //     });
-      // }
-       //edit method
-       edit(list:any,id:any){
-        console.log("edit123",list)
+      //post method
+      post(list:any){
+          this.apiService.post('/Reportees',list).subscribe((response: any) => {
+            this.router.navigate(['/reportee']);
+            // this.myGroup.reset();
+            this.visible = false;
+            this.photos = [];
+          });
+      }
+      //edit method
+      edit(list:any,id:any){
         this.apiService.edit(`/Reportees/${id}`,list).subscribe((response: any) => {
-          console.log("777777",response)
-          this.router.navigate(['/reschedule']);
-          this.formGroup.reset();
+          this.router.navigate(['/reportee']);
+          this.photos = [];
+          this.myGroup.reset();
         });
       }
-
-//  public async addPhotoToGallery() {
-//     const capturedPhoto:Photo = await Camera.getPhoto({
-//       resultType: CameraResultType.Uri,
-//       source: CameraSource.Camera,
-//       quality: 100
-//     });
-//     this.photo_list = capturedPhoto;
-//     var a_list = Object.assign({},capturedPhoto);
-//     this.photoss = a_list.webPath;
-//     this.visible = true;
-//     this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photoss);
-//     console.log('this.photos',typeof this.photos)
-//     console.log('this.photos11', this.photos)
-//   }
+ public async addPhotoToGallery() {
+    const capturedPhoto:Photo = await Camera.getPhoto({
+      resultType: CameraResultType.Base64,
+      source: CameraSource.Camera,
+      quality: 100
+    });
+    var imageUrl = capturedPhoto.base64String;
+    this.photo_list = "data:image/jpeg;base64," + imageUrl;
+    this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photo_list);
+    this.visible = true;
+  }
 }

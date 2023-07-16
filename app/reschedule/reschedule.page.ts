@@ -29,7 +29,7 @@ export class ReschedulePage implements OnInit {
     this.allgetlist();
     }
     allgetlist(){ 
-      this.apiService.getMethodwithToken('/ReporteeReschedules').subscribe((response: any) => {
+      this.apiService.getMethodwithToken('/Reportees/Reschedules').subscribe((response: any) => {
         console.log('response11',response)
       this.list = response;
       this.temp_list = this.list;
@@ -38,7 +38,7 @@ export class ReschedulePage implements OnInit {
  
    //delete method
    delete(id:any){
-    this.apiService.deleteMethodwithToken(`/ReporteeReschedules/${id}`).subscribe((response: any) => {
+    this.apiService.deleteMethodwithToken(`/Reportees/${id}`).subscribe((response: any) => {
       this.allgetlist();
       this.temp_list = this.list;
       });

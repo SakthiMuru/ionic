@@ -15,24 +15,24 @@
      <div *ngIf="ishide">
       <form [formGroup]="myGroup" id="form">
         <ion-list class="background-color">
-          <ion-item class="ion-margin-bottom">
-            <ion-select interface="popover" formControlName="reporterId" (ionChange)="triggerEvent($event)" placeholder="Reporter Team">
+          <ion-item class="ion-margin-bottom" disabled="{{isDisabled}}">
+            <ion-select interface="popover" formControlName="reporterTeamId" (ionChange)="triggerEvent($event)" placeholder="Reporter Team">
               <ion-select-option  *ngFor="let list of all_team_list" value={{list.reporterTeamId}}>{{list.reporterTeam}}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
         <ion-list class="background-color">
-          <ion-item disabled="{{isDisabled}}" class="ion-margin-bottom">
-            <ion-select interface="popover" formControlName="issueName" placeholder="List Of Issues">
-              <ion-select-option *ngFor="let list of array_reporter_list_of_issues">{{list}}</ion-select-option>
+          <ion-item  class="ion-margin-bottom">
+            <ion-select interface="popover" (ionChange)="briefifEvent($event)" formControlName="issueName" placeholder="List Of Issues">
+              <ion-select-option *ngFor="let list of array_reporter_list_of_issues" >{{list.briefIf}}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
         <ion-item class="ion-margin-bottom">
-      <ion-input type="text" formControlName="name" placeholder="Reportee Name"></ion-input>
+      <ion-input type="text" aria-readonly="true" [readonly]="true" formControlName="name" placeholder="Reportee Name"></ion-input>
      </ion-item>
       <ion-list class="background-color">
-        <ion-item class="ion-margin-bottom">
+        <ion-item class="ion-margin-bottom" disabled="{{isDisabled}}">
           <ion-select interface="popover" formControlName="reporteeTeamId" placeholder="Team">
             <ion-select-option *ngFor="let list of product_all_team_list" value={{list.id}}>{{list.name}}</ion-select-option>
           </ion-select>
@@ -40,7 +40,7 @@
       </ion-list>
     <ion-list class="background-color">
     <ion-item class="ion-margin-bottom">
-      <ion-input type="text" formControlName="briefIf" placeholder="Countermeasure brief if"></ion-input>
+      <ion-input type="text" formControlName="briefIf" [readonly]="true" placeholder="Countermeasure brief if"></ion-input>
     </ion-item>
     </ion-list>
       <div style="text-align: center;">
@@ -58,15 +58,15 @@
       <form [formGroup]="myGroup" id="form">
         <ion-list class="background-color">
           <ion-item class="ion-margin-bottom">
-            <ion-select interface="popover" formControlName="reporterId" (ionChange)="triggerEvent($event)" placeholder="Reporter Team">
+            <ion-select interface="popover" formControlName="reporterTeamId" (ionChange)="triggerEvent($event)" placeholder="Reporter Team">
               <ion-select-option  *ngFor="let list of all_team_list" value={{list.reporterTeamId}}>{{list.reporterTeam}}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
         <ion-list class="background-color">
           <ion-item disabled="{{isDisabled}}" class="ion-margin-bottom">
-            <ion-select interface="popover" formControlName="issueName" placeholder="List Of Issues">
-              <ion-select-option *ngFor="let list of array_reporter_list_of_issues">{{list}}</ion-select-option>
+            <ion-select interface="popover" formControlName="issueName" (ionChange)="briefifEvent($event)" placeholder="List Of Issues">
+              <ion-select-option *ngFor="let list of array_reporter_list_of_issues" [value]=list>{{list.briefIf}}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>

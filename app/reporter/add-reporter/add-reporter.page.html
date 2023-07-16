@@ -14,7 +14,7 @@
   <div *ngIf="ishide">
   <form [formGroup]="myGroup" id="form">
     <ion-item class="ion-margin-bottom">
-  <ion-input type="text" readonly formControlName="name" placeholder="Reporter Name"></ion-input>
+  <ion-input type="text" [readonly]="true" formControlName="name" placeholder="Reporter Name"></ion-input>
 </ion-item>
 
 <ion-list class="background-color">
@@ -35,7 +35,7 @@
   <ion-popover trigger="date" size="cover">
     <ng-template>
       <ion-datetime
-      formControlName="reportedDate"
+      formControlName="issueDate"
         presentation="date"
         [(ngModel)]="d_of_report"
       ></ion-datetime>
@@ -46,16 +46,16 @@
 <ion-list class="background-color">
 <ion-item class="ion-margin-bottom">
   <!-- <ion-input type="text" formControlName="issue_level_indicator" placeholder="Issue level indicator"></ion-input> -->
-  <ion-select interface="popover" formControlName="issueLevel" placeholder="Issue level indicator">
-    <ion-select-option value="Process">Process</ion-select-option>
-    <ion-select-option value="Safety">Safety</ion-select-option>
-    <ion-select-option value="5_s">5's</ion-select-option>
+  <ion-select interface="popover" formControlName="issueLevelId" placeholder="Issue level indicator">
+    <ion-select-option *ngFor="let list of all_issues_level_list" value={{list.id}}>{{list.name}}</ion-select-option>
+    <!-- <ion-select-option value="Safety">Safety</ion-select-option>
+    <ion-select-option value="5_s">5's</ion-select-option> -->
   </ion-select>
 </ion-item>
 </ion-list>
 
 <ion-item class="ion-margin-bottom">
-  <ion-input readonly type="text" formControlName="issueLocation" placeholder="Issue location"></ion-input>
+  <ion-input readonly type="text" [readonly]="true" formControlName="issueLocation" placeholder="Issue location"></ion-input>
 </ion-item>
 <!-- <ion-item class="ion-margin-bottom"> -->
   <!-- <ion-input type="text" formControlName="responsibleTeamId" placeholder="Responsible team"></ion-input> -->
@@ -77,7 +77,7 @@
   </ion-popover>
 </ion-item>
 <ion-item class="ion-margin-bottom">
-  <ion-input  type="text" formControlName="briefIf" placeholder="Breif if"></ion-input>
+  <ion-input  type="text" [readonly]="true" formControlName="briefIf" placeholder="Breif if"></ion-input>
 </ion-item>
   <div style="text-align: center;">
     <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
@@ -111,7 +111,7 @@
   value="{{ d_of_report | date: 'dd MMM yyyy' }}" id="date" class="ion-text-end"></ion-input>
   <ion-popover trigger="date" size="cover">
     <ng-template>
-      <ion-datetime formControlName="reportedDate" presentation="date" [(ngModel)]="d_of_report"
+      <ion-datetime formControlName="issueDate" presentation="date" [(ngModel)]="d_of_report"
       ></ion-datetime>
     </ng-template>
   </ion-popover>
@@ -119,10 +119,8 @@
 
 <ion-list class="background-color">
 <ion-item class="ion-margin-bottom">
-  <ion-select interface="popover" formControlName="issueLevel" placeholder="Issue level indicator">
-    <ion-select-option value="Process">Process</ion-select-option>
-    <ion-select-option value="Safety">Safety</ion-select-option>
-    <ion-select-option value="5_s">5's</ion-select-option>
+  <ion-select interface="popover" formControlName="issueLevelId" placeholder="Issue level indicator">
+    <ion-select-option *ngFor="let list of all_issues_level_list" value={{list.id}}>{{list.name}}</ion-select-option>
   </ion-select>
 </ion-item>
 </ion-list>

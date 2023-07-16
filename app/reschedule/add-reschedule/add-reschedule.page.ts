@@ -24,10 +24,10 @@ export class AddReschedulePage implements OnInit {
   photo_list:any;
   post_method:any = [];
   formGroup!: FormGroup;
-  reschedule_reporter_name!:FormControl;
-  reschedule_reporter_team!:FormControl;
-  re_target_date!: FormControl;
-  breif_if!: FormControl;
+  reporterId!:FormControl;
+  issueName!:FormControl;
+  targetDate!: FormControl;
+  briefIf!: FormControl;
   visible:boolean = false;
   birthDate:any;
   id:any;
@@ -42,13 +42,12 @@ export class AddReschedulePage implements OnInit {
   filter_response :any[] = [];
   array_reporter_team :any;
   reporter_id:any;
-  private token = localStorage.getItem('token');
+  all_team_list:any;
+  isDisabled:boolean = true;
   constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.allgetlist();
     this.t_date = new Date().toISOString();
-    console.log('adfdf',this.token)
     this.FormControls();
 
     this.route.params.subscribe(params => {   
@@ -75,53 +74,53 @@ export class AddReschedulePage implements OnInit {
    } 
 
   }
-  triggerEvent(data:any){   
-      var searchlist = this.filter_response.filter((x:any) => x.team == data.target.value);
-      this.array_reporter_list_of_issues = searchlist;
-  }
+
   ionViewWillEnter(){
-    // this.date = new Date().toISOString();
-    this.allgetlist();
-    }
-    allgetlist(){ 
-      this.apiService.getMethodwithToken('/Reporters').subscribe((response: any) => {
-        this.filter_response = response;
-        const a_id = Object.assign({},...response)
-        this.reporter_id = a_id._id;
-        this.array_reporter_team =  response.reduce((acc:any, val:any) => {
-        if (!acc.find((el:any) => el.team === val.team)) {
-          acc.push(val);
-        }
-        return acc;
-      }, [])
-      });
+    this.reporter_team_list();
   }
+   
+   //reporter get method 
+   reporter_team_list(){
+    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+      this.filter_response = response;
+      this.all_team_list = response;
+    });
+    }
+
   //id get method
   id_get(){
-    this.apiService.getMethodwithToken(`/ReporteeReschedules/${this.id}`).subscribe((response: any) => {
+    this.apiService.getMethodwithToken(`/Reportees/${this.id}`).subscribe((response: any) => {
       console.log('res1234',response)
     const employee = response;
-    this.reschedule_reporter_name.setValue(employee.reschedule_reporter_name);
-    this.reschedule_reporter_team.setValue(employee.reschedule_reporter_team);
-    this.t_date = employee.re_target_date;
-    console.log('sdsdsds',employee.re_target_date)
-    this.breif_if.setValue(employee.breif_if);
+    this.reporterId.setValue(employee.reporterId);
+    this.issueName.setValue(employee.issueName);
+    this.t_date = employee.targetDate;
+    console.log('sdsdsds',employee.targetDate)
+    this.briefIf.setValue(employee.briefIf);
     // this.countermeasure_brief_if.setValue(employee.countermeasure_brief_if);
     console.log('this.filter_response',this.filter_response);
-    var searchlist = this.filter_response.filter((x:any) => x.team == employee.reschedule_reporter_name);
+    var searchlist = this.filter_response.filter((x:any) => x.team == employee.reporterId);
     this.array_reporter_list_of_issues = searchlist;
     });
   }
+  
+  triggerEvent(data:any){
+    this.isDisabled = false;
+    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+      var searchlist = response.filter((x:any) => x.reporterTeamId == data.target.value);
+      this.array_reporter_list_of_issues = searchlist[0].issueList;
+    });
+  }
   FormControls() {
-    this.reschedule_reporter_name = new FormControl('', [Validators.required]);
-    this.reschedule_reporter_team = new FormControl('', [Validators.required]);
-    this.re_target_date = new FormControl('', [Validators.required]);
-    this.breif_if = new FormControl('', [Validators.required]);
+    this.reporterId = new FormControl('', [Validators.required]);
+    this.issueName = new FormControl('', [Validators.required]);
+    this.targetDate = new FormControl('', [Validators.required]);
+    this.briefIf = new FormControl('', [Validators.required]);
     this.formGroup = new FormGroup({
-      reschedule_reporter_name:this.reschedule_reporter_name,
-      reschedule_reporter_team:this.reschedule_reporter_team,
-      re_target_date: this.re_target_date,
-      breif_if: this.breif_if
+      reporterId:this.reporterId,
+      issueName:this.issueName,
+      targetDate: this.targetDate,
+      briefIf: this.briefIf
     });
   }
   submit() {
@@ -130,8 +129,8 @@ export class AddReschedulePage implements OnInit {
       // this.message = 'Invalid data';
       return;
     }
-    console.log('111',typeof this.formGroup.value.re_target_date)
-    console.log('222',this.formGroup.value.re_target_date)
+    console.log('111',typeof this.formGroup.value.targetDate)
+    console.log('222',this.formGroup.value.targetDate)
     
     console.log('this.a_list1234567',this.a_list)
     let employee = {
@@ -144,44 +143,45 @@ export class AddReschedulePage implements OnInit {
         console.log('edit',this.photo_list)
          this.edit(employee,this.id);
       } 
-    }else{
-      if (this.formGroup.value !== undefined) {
-        this.post(employee);
-      } 
     }
+    // else{
+    //   if (this.formGroup.value !== undefined) {
+    //     this.post(employee);
+    //   } 
+    // }
       }
-      post(list:any){
-        console.log("list123",list)
-          this.apiService.post('/ReporteeReschedules',list).subscribe((response: any) => {
-            console.log("3333444555",response)
-            this.router.navigate(['/reschedule']);
-            this.formGroup.reset();
-            this.visible = false;
-            this.t_date = new Date().toISOString();
-          });
-      }
+      // post(list:any){
+      //   console.log("list123",list)
+      //     this.apiService.post('/Reportees/Reschedules',list).subscribe((response: any) => {
+      //       console.log("3333444555",response)
+      //       this.router.navigate(['/reschedule']);
+      //       this.formGroup.reset();
+      //       this.visible = false;
+      //       this.t_date = new Date().toISOString();
+      //     });
+      // }
        //edit method
        edit(list:any,id:any){
         console.log("edit123",list)
-        this.apiService.edit(`/ReporteeReschedules/${id}`,list).subscribe((response: any) => {
+        this.apiService.edit(`/Reportees/${id}`,list).subscribe((response: any) => {
           console.log("777777",response)
           this.router.navigate(['/reschedule']);
           this.formGroup.reset();
         });
       }
 
- public async addPhotoToGallery() {
-    const capturedPhoto:Photo = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Camera,
-      quality: 100
-    });
-    this.photo_list = capturedPhoto;
-    var a_list = Object.assign({},capturedPhoto);
-    this.photoss = a_list.webPath;
-    this.visible = true;
-    this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photoss);
-    console.log('this.photos',typeof this.photos)
-    console.log('this.photos11', this.photos)
-  }
+//  public async addPhotoToGallery() {
+//     const capturedPhoto:Photo = await Camera.getPhoto({
+//       resultType: CameraResultType.Uri,
+//       source: CameraSource.Camera,
+//       quality: 100
+//     });
+//     this.photo_list = capturedPhoto;
+//     var a_list = Object.assign({},capturedPhoto);
+//     this.photoss = a_list.webPath;
+//     this.visible = true;
+//     this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photoss);
+//     console.log('this.photos',typeof this.photos)
+//     console.log('this.photos11', this.photos)
+//   }
 }

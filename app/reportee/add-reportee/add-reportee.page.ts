@@ -25,7 +25,7 @@ export class AddReporteePage implements OnInit {
   photo_list:any;
   post_method:any = [];
   myGroup!: FormGroup;
-  reporterId!:FormControl;
+  reporterTeamId!:FormControl;
   issueName!:FormControl;
   name!: FormControl;
   reporteeTeamId!: FormControl;
@@ -47,6 +47,8 @@ export class AddReporteePage implements OnInit {
   private reporter_id:any;
   all_team_list:any;
   product_all_team_list:any;
+  reporterId:any;
+  issueTargetDate:any;
   constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -83,10 +85,9 @@ export class AddReporteePage implements OnInit {
     this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
       this.filter_response = response;
       this.all_team_list = response;
-      
     });
     }
-
+ 
      //team get method 
      report_team_list(){
       this.apiService.getMethodwithToken(`/Masters/ReporteeTeams`).subscribe((response: any) => {
@@ -100,33 +101,43 @@ export class AddReporteePage implements OnInit {
   id_get(){
     this.apiService.getMethodwithToken(`/Reportees/${this.id}`).subscribe((response: any) => {
     const employee = response;
-    this.reporterId.setValue(employee.reporterId.toString());
+    this.reporterTeamId.setValue(employee.reporterTeamId.toString());
     this.issueName.setValue(employee.issueName);
     this.name.setValue(employee.name);
     this.reporteeTeamId.setValue(employee.reporteeTeamId.toString());
     this.briefIf.setValue(employee.briefIf);
     this.photos = employee.resolveImage;
-    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
-      var searchlist = response.filter((x:any) => x.reporterTeamId == employee.reporterId);
-      this.array_reporter_list_of_issues = searchlist[0].issueList;
-    });
+    // this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+    //   var searchlist = response.filter((x:any) => x.reporterTeamId == employee.reporterTeamId);
+    //   this.array_reporter_list_of_issues = searchlist[0].issueList;
+    // });
     });
   }
   triggerEvent(data:any){
+    console.log('data',data.target.value)
     this.isDisabled = false;
     this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+      console.log('response',response)
       var searchlist = response.filter((x:any) => x.reporterTeamId == data.target.value);
-      this.array_reporter_list_of_issues = searchlist[0].issueList;
+      console.log('searchlist',searchlist)
+      this.array_reporter_list_of_issues = searchlist[0].reporters;
+      console.log('this.array_reporter_list_of_issues',this.array_reporter_list_of_issues)
     });
   }
+
+  briefifEvent(data:any){
+  this.reporterId = data.target.value.id;
+  this.issueTargetDate = data.target.value.targetDate;
+  }
+  
   FormControls() {
-    this.reporterId = new FormControl('', [Validators.required]);
+    this.reporterTeamId = new FormControl('', [Validators.required]);
     this.issueName = new FormControl('', [Validators.required]);
     this.name = new FormControl('', [Validators.required]);
     this.reporteeTeamId = new FormControl('', [Validators.required]);
     this.briefIf = new FormControl('', [Validators.required]);
     this.myGroup = new FormGroup({
-      reporterId:this.reporterId,
+      reporterTeamId:this.reporterTeamId,
       issueName:this.issueName,
       name: this.name,
       reporteeTeamId: this.reporteeTeamId,
@@ -147,9 +158,14 @@ export class AddReporteePage implements OnInit {
     }
         if (this.myGroup.value !== undefined) {
           let employee = {
+            "reporterId":this.reporterId,
+            "issueTargetDate":this.issueTargetDate,
             "resolveImage": this.photo_list,
             ...this.myGroup.value
         };
+          var all_data = Object(employee);
+          var a_data = Object.create(all_data.issueName);
+          all_data.issueName = a_data.briefIf;
         if (this.a_list == 'edit') {
           if (this.myGroup.value !== undefined) {
             this.edit(employee,this.id);
@@ -165,7 +181,7 @@ export class AddReporteePage implements OnInit {
       post(list:any){
           this.apiService.post('/Reportees',list).subscribe((response: any) => {
             this.router.navigate(['/reportee']);
-            this.myGroup.reset();
+            // this.myGroup.reset();
             this.visible = false;
             this.photos = [];
           });

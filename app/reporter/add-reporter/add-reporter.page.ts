@@ -28,8 +28,8 @@ export class AddReporterPage implements OnInit {
   myGroup!: FormGroup;
   name!: FormControl;
   reporterTeamId!: FormControl;
-  reportedDate!: FormControl;
-  issueLevel!: FormControl;
+  issueDate!: FormControl;
+  issueLevelId!: FormControl;
   issueLocation!: FormControl;
   responsibleTeamId!: FormControl;
   targetDate!: FormControl;
@@ -46,9 +46,11 @@ export class AddReporterPage implements OnInit {
   all_team_list : any;
   all_responsibleteams_list :any;
   datalist: any;
+  all_issues_level_list:any;
   constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.issues_level_list();
     this.report_team_list(); 
     this.responsible_list_team_list();
     this.d_of_report = new Date().toISOString();
@@ -89,6 +91,12 @@ export class AddReporterPage implements OnInit {
       this.all_team_list = response;
     });
     }
+
+    issues_level_list(){
+      this.apiService.getMethodwithToken(`/Masters/IssueLevels`).subscribe((response: any) => {
+        this.all_issues_level_list = response;
+      });
+      }
      
     responsible_list_team_list(){
       this.apiService.getMethodwithToken(`/Masters/ResponsibleTeams`).subscribe((response: any) => {
@@ -102,8 +110,8 @@ export class AddReporterPage implements OnInit {
     console.log('response',response)
     const employee = response;
     this.name.setValue(employee.name);
-    this.d_of_report = employee.reportedDate;
-    this.issueLevel.setValue(employee.issueLevel);
+    this.d_of_report = employee.issueDate;
+    this.issueLevelId.setValue(employee.issueLevelId.toString());
     this.responsibleTeamId.setValue(employee.responsibleTeamId.toString());
     this.issueLocation.setValue(employee.issueLocation);
     this.t_date = employee.targetDate;
@@ -115,8 +123,8 @@ export class AddReporterPage implements OnInit {
   FormControls() {
     this.name = new FormControl('', [Validators.required]);
     this.reporterTeamId = new FormControl('', [Validators.required]);
-    this.reportedDate = new FormControl('', []);
-    this.issueLevel = new FormControl('', [Validators.required]);
+    this.issueDate = new FormControl('', []);
+    this.issueLevelId = new FormControl('', [Validators.required]);
     this.issueLocation = new FormControl('', [Validators.required]);
     this.responsibleTeamId = new FormControl('', [Validators.required]);
     this.targetDate = new FormControl('', []);
@@ -124,8 +132,8 @@ export class AddReporterPage implements OnInit {
     this.myGroup = new FormGroup({
       name: this.name,
       reporterTeamId: this.reporterTeamId,
-      reportedDate: this.reportedDate,
-      issueLevel: this.issueLevel,
+      issueDate: this.issueDate,
+      issueLevelId: this.issueLevelId,
       issueLocation: this.issueLocation,
       responsibleTeamId: this.responsibleTeamId,
       targetDate: this.targetDate,
@@ -134,22 +142,22 @@ export class AddReporterPage implements OnInit {
   }
   submit() {
     console.log("this.myGroup.value",this.myGroup.value)
-    this.myGroup.value.reportedDate = this.d_of_report;
+    this.myGroup.value.issueDate = this.d_of_report;
     this.myGroup.value.targetDate = this.t_date;
         if (this.myGroup.invalid) {
           // this.message = 'Invalid data';
           return;
         }
-    if (typeof this.myGroup.value.targetDate == "string" && typeof this.myGroup.value.reportedDate == "string") {
+    if (typeof this.myGroup.value.targetDate == "string" && typeof this.myGroup.value.issueDate == "string") {
       this.myGroup.value.targetDate = formatDate(new Date(), 'dd/MM/yyyy', 'en');
-      this.myGroup.value.reportedDate = formatDate(new Date(), 'dd/MM/yyyy', 'en');
+      this.myGroup.value.issueDate = formatDate(new Date(), 'dd/MM/yyyy', 'en');
     }
-    if (typeof this.myGroup.value.targetDate !== "string" && typeof this.myGroup.value.reportedDate !== "string") {
+    if (typeof this.myGroup.value.targetDate !== "string" && typeof this.myGroup.value.issueDate !== "string") {
       this.myGroup.value.targetDate = formatDate(this.myGroup.value.targetDate, 'dd/MM/yyyy', 'en');
-      this.myGroup.value.reportedDate = formatDate(this.myGroup.value.reportedDate, 'dd/MM/yyyy', 'en');
+      this.myGroup.value.issueDate = formatDate(this.myGroup.value.issueDate, 'dd/MM/yyyy', 'en');
     }
         if (this.myGroup.value !== undefined) {
-          this.myGroup.value.reportedDate = this.d_of_report;
+          this.myGroup.value.issueDate = this.d_of_report;
           this.myGroup.value.targetDate = this.t_date;
           let employee = {
             "issueImage": this.photo_list,

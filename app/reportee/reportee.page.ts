@@ -19,8 +19,7 @@ export class ReporteePage implements OnInit {
   constructor(private route: ActivatedRoute,public apiService: ApiService,private formBuilder: FormBuilder,private router: Router) { }
 
   ngOnInit() {
-    this.allgetlist();
-    this.reschedule_allgetlist();
+    // this.allgetlist();
     this.temp_list = this.list;
     this.formGroup = this.formBuilder.group({
       formGroupProperty: ''
@@ -29,22 +28,13 @@ export class ReporteePage implements OnInit {
   
   ionViewWillEnter(){
     this.allgetlist();
-    this.reschedule_allgetlist();
     }
     // reportee get method
     allgetlist(){ 
       this.apiService.getMethodwithToken('/Reportees').subscribe((response: any) => {
-        console.log('response',response)
+      console.log('response',response)
       this.list = response;
       this.temp_list = this.list;
-      });
-    }
-    //reschedule reportee get method
-    reschedule_allgetlist(){ 
-      this.apiService.getMethodwithToken('/ReporteeReschedules').subscribe((response: any) => {
-        console.log('response',response)
-      this.reschedule_list = response;
-      this.temp_list = this.reschedule_list;
       });
     }
 
@@ -81,12 +71,7 @@ export class ReporteePage implements OnInit {
     this.temp_list = this.list;
   });
   }
-  reschedule_delete(id:any){
-    this.apiService.deleteMethodwithToken(`/ReporteeReschedules/${id}`).subscribe((response: any) => {
-      this.reschedule_allgetlist();
-      this.temp_list = this.reschedule_list;
-    });
-  }
+ 
   filter(){
     // this.name = 'Nancy';
     this.list

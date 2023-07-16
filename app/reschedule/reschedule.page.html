@@ -1,0 +1,45 @@
+<ion-header class="ion-no-border" style="background-color: #f1f5f8;">
+  <ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-menu-button menu ="main-menu"></ion-menu-button>
+  </ion-buttons>
+  </ion-toolbar>
+    <h3 style="margin-left: 11px;">Reschedule</h3>   
+</ion-header>
+<ion-content>
+  <div class="slides ion-margin-bottom">
+    <form id="form">
+    <app-input type="text"(keyup)="fireFilterEvent($event)" placeholder="Filter"></app-input>
+  </form>
+  </div>
+  <div class="container">
+    <ion-row class="ion-align-items-center">
+      <ion-col size="6"><h2>Reschedule List</h2></ion-col>
+      <ion-col size="3" ><ion-button (click)="excel(list)" expand="block"><ion-icon name="document-text-outline"></ion-icon><span></span></ion-button></ion-col>
+      <ion-col size="3"><ion-button expand="block" routerLink="/add-reschedule"><ion-icon name="add-outline"></ion-icon></ion-button></ion-col>
+    </ion-row>
+      <div class="space">
+        <ion-item lines="none" *ngFor="let item of list; let i = index">
+          <ion-grid>
+            <ion-row class="ion-align-items-center">
+              <!-- <ion-col size=""> -->
+                <!-- <ion-button color="light" fill="clear"> -->
+                  <!-- <ion-icon slot="icon-only" name="document"></ion-icon> -->
+                  <!-- <img [src]="item.changingThisBreaksApplicationSecurity" height=100px; width=100px; alt="binging data image fadsf"> -->
+                <!-- </ion-button> -->
+              <!-- </ion-col> -->
+              <ion-col size="9">
+                <ion-label>
+                  <h4>reschedule Name :{{item.reschedule_reporter_team}}</h4>
+                  <h6>Breif If :{{item.breif_if}}</h6>
+                </ion-label>
+              </ion-col>
+              <ion-col size="1"><ion-icon routerLink="/add-reschedule/{{item.id}}/view" name="eye-outline"></ion-icon></ion-col>
+              <ion-col size="1"><ion-icon routerLink="/add-reschedule/{{item.id}}/edit" name="create-outline"></ion-icon></ion-col>
+              <ion-col size="1"><ion-icon (click)="delete(item.id)" name="trash-outline"></ion-icon></ion-col>
+            </ion-row>
+          </ion-grid>
+          </ion-item>
+      </div>
+  </div>
+</ion-content>

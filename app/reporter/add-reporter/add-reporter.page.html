@@ -1,0 +1,166 @@
+<ion-header class="ion-no-border" style="background-color: #f1f5f8;">
+  <ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-icon routerLink="/reporter" slot="icon-only" name="arrow-back"></ion-icon>&nbsp;&nbsp;
+    <!-- <ion-menu-button menu ="main-menu"></ion-menu-button> -->
+  </ion-buttons>
+  <ion-buttons slot="start">
+    <h6 *ngIf="isview" style="font-family: fangsong;">View Reporter</h6> 
+    <h6 *ngIf="ishideview" style="font-family: fangsong;">{{isupdate ? "Update Reporter" : "Add Reporter"}}</h6>  
+    </ion-buttons>
+  </ion-toolbar> 
+</ion-header>
+<ion-content>
+  <div *ngIf="ishide">
+  <form [formGroup]="myGroup" id="form">
+    <ion-item class="ion-margin-bottom">
+  <ion-input type="text" readonly formControlName="name" placeholder="Reporter Name"></ion-input>
+</ion-item>
+
+<ion-list class="background-color">
+  <ion-item  class="ion-margin-bottom">
+    <ion-select  interface="popover" formControlName="reporterTeamId" placeholder="Team">
+      <ion-select-option *ngFor="let list of all_team_list" value={{list.id}}>{{list.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>
+<!-- <ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="date_of_report" placeholder="Date of Issue"></ion-input>
+</ion-item> -->
+
+<ion-item class="ion-margin-bottom">
+  <ion-label>Issue Date</ion-label>
+  <ion-input
+  value="{{ d_of_report | date: 'dd MMM yyyy' }}" id="date" class="ion-text-end"></ion-input>
+  <ion-popover trigger="date" size="cover">
+    <ng-template>
+      <ion-datetime
+      formControlName="reportedDate"
+        presentation="date"
+        [(ngModel)]="d_of_report"
+      ></ion-datetime>
+    </ng-template>
+  </ion-popover>
+</ion-item>
+
+<ion-list class="background-color">
+<ion-item class="ion-margin-bottom">
+  <!-- <ion-input type="text" formControlName="issue_level_indicator" placeholder="Issue level indicator"></ion-input> -->
+  <ion-select interface="popover" formControlName="issueLevel" placeholder="Issue level indicator">
+    <ion-select-option value="Process">Process</ion-select-option>
+    <ion-select-option value="Safety">Safety</ion-select-option>
+    <ion-select-option value="5_s">5's</ion-select-option>
+  </ion-select>
+</ion-item>
+</ion-list>
+
+<ion-item class="ion-margin-bottom">
+  <ion-input readonly type="text" formControlName="issueLocation" placeholder="Issue location"></ion-input>
+</ion-item>
+<!-- <ion-item class="ion-margin-bottom"> -->
+  <!-- <ion-input type="text" formControlName="responsibleTeamId" placeholder="Responsible team"></ion-input> -->
+  <ion-list class="background-color">
+    <ion-item class="ion-margin-bottom">
+      <ion-select interface="popover" formControlName="responsibleTeamId" placeholder="Responsible team">
+        <ion-select-option *ngFor="let list of all_responsibleteams_list" value={{list.id}}>{{list.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+<ion-item class="ion-margin-bottom">
+  <ion-label>Target Date</ion-label>
+  <ion-input
+  value="{{ t_date | date: 'dd MMM yyyy' }}" id="tdate" class="ion-text-end"></ion-input>
+  <ion-popover trigger="tdate" size="cover">
+    <ng-template>
+      <ion-datetime formControlName="targetDate" presentation="tdate" [(ngModel)]="t_date"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+</ion-item>
+<ion-item class="ion-margin-bottom">
+  <ion-input  type="text" formControlName="briefIf" placeholder="Breif if"></ion-input>
+</ion-item>
+  <div style="text-align: center;">
+    <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
+    width: 100%;height: 0%;" [src]="photos" height=100px; width=100px; alt="binging data image fadsf">
+</div><br>
+  <!-- <ion-fab horizontal="center" *ngIf="isShown">
+    <ion-fab-button (click)="addPhotoToGallery()">
+      <ion-icon name="camera"></ion-icon>
+    </ion-fab-button>
+  </ion-fab> -->
+</form>
+</div>
+
+<div *ngIf="isShown">
+  <form [formGroup]="myGroup" id="form">
+    <ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="name" placeholder="Reporter Name"></ion-input>
+</ion-item>
+
+<ion-list class="background-color">
+  <ion-item class="ion-margin-bottom">
+    <ion-select interface="popover" formControlName="reporterTeamId" placeholder="Team">
+      <ion-select-option *ngFor="let list of all_team_list" value={{list.id}}>{{list.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>
+
+<ion-item class="ion-margin-bottom">
+  <ion-label>Issue Date</ion-label>
+  <ion-input 
+  value="{{ d_of_report | date: 'dd MMM yyyy' }}" id="date" class="ion-text-end"></ion-input>
+  <ion-popover trigger="date" size="cover">
+    <ng-template>
+      <ion-datetime formControlName="reportedDate" presentation="date" [(ngModel)]="d_of_report"
+      ></ion-datetime>
+    </ng-template>
+  </ion-popover>
+</ion-item>
+
+<ion-list class="background-color">
+<ion-item class="ion-margin-bottom">
+  <ion-select interface="popover" formControlName="issueLevel" placeholder="Issue level indicator">
+    <ion-select-option value="Process">Process</ion-select-option>
+    <ion-select-option value="Safety">Safety</ion-select-option>
+    <ion-select-option value="5_s">5's</ion-select-option>
+  </ion-select>
+</ion-item>
+</ion-list>
+
+<ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="issueLocation" placeholder="Issue location"></ion-input>
+</ion-item>
+  <ion-list class="background-color">
+    <ion-item class="ion-margin-bottom">
+      <ion-select interface="popover" formControlName="responsibleTeamId" placeholder="Responsible team">
+        <ion-select-option *ngFor="let list of all_responsibleteams_list" value={{list.id}}>{{list.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+<ion-item class="ion-margin-bottom">
+  <ion-label>Target Date</ion-label>
+  <ion-input 
+  value="{{ t_date | date: 'dd MMM yyyy' }}" id="tdate" class="ion-text-end"></ion-input>
+  <ion-popover trigger="tdate" size="cover">
+    <ng-template>
+      <ion-datetime formControlName="targetDate" presentation="tdate" [(ngModel)]="t_date"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+</ion-item>
+<ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="briefIf" placeholder="Breif if"></ion-input>
+</ion-item>
+  <div *ngIf="visible" style="text-align: center;">
+    <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
+    width: 100%;height: 0%;" [src]="photos" height=100px; width=100px; alt="binging data image fadsf">
+</div>
+  <ion-fab horizontal="center" *ngIf="isShown">
+    <ion-fab-button (click)="addPhotoToGallery()">
+      <ion-icon name="camera"></ion-icon>
+    </ion-fab-button>
+  </ion-fab><br><br>
+  <ion-button *ngIf="isShown" (click)="submit()" expand="block" shape="round">{{isupdate ? "Update" : "Save"}}</ion-button>
+</form><br>
+</div>
+</ion-content>

@@ -1,0 +1,79 @@
+<ion-header class="ion-no-border" style="background-color: #f1f5f8;">
+  <ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-icon routerLink="/reschedule" slot="icon-only" name="arrow-back"></ion-icon>&nbsp;&nbsp;
+    <!-- <ion-menu-button menu ="main-menu"></ion-menu-button> -->
+  </ion-buttons>
+  <ion-buttons slot="start">
+    <h6 *ngIf="isview" style="font-family: fangsong;">View Reportee</h6> 
+    <h6 *ngIf="ishideview" style="font-family: fangsong;">{{isupdate ? "Update Reschedule" : "Add Reschedule"}}</h6>  
+    </ion-buttons>
+  </ion-toolbar> 
+</ion-header>
+<ion-content>
+  <div *ngIf="ishide">
+    <form [formGroup]="formGroup" id="form">
+
+      <ion-list class="background-color">
+        <ion-item class="ion-margin-bottom">
+          <ion-select interface="popover" formControlName="reschedule_reporter_name" (ionChange)="triggerEvent($event)" placeholder="Reporter Team">
+            <ion-select-option  *ngFor="let list of array_reporter_team">{{list.team}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <ion-list class="background-color">
+        <ion-item class="ion-margin-bottom">
+          <ion-select interface="popover" formControlName="reschedule_reporter_team" placeholder="List Of Issues">
+            <ion-select-option *ngFor="let list of array_reporter_list_of_issues">{{list.brief}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <ion-item class="ion-margin-bottom">
+        <ion-label>Target Date</ion-label>
+        <ion-input 
+        value="{{ t_date | date: 'dd MMM yyyy' }}" id="tdate" class="ion-text-end"></ion-input>
+        <ion-popover trigger="tdate" size="cover">
+          <ng-template>
+            <ion-datetime formControlName="re_target_date" presentation="tdate" [(ngModel)]="t_date"></ion-datetime>
+          </ng-template>
+        </ion-popover>
+      </ion-item>
+      <ion-item class="ion-margin-bottom">
+        <ion-input type="text" formControlName="breif_if" placeholder="Breif if"></ion-input>
+      </ion-item>
+      </form>
+</div>
+
+<div *ngIf="isShown">
+  <form [formGroup]="formGroup" id="form">
+    <ion-list class="background-color">
+      <ion-item class="ion-margin-bottom">
+        <ion-select interface="popover" formControlName="reschedule_reporter_name" (ionChange)="triggerEvent($event)" placeholder="Reporter Team">
+          <ion-select-option  *ngFor="let list of array_reporter_team">{{list.team}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-list class="background-color">
+      <ion-item class="ion-margin-bottom">
+        <ion-select interface="popover" formControlName="reschedule_reporter_team" placeholder="List Of Issues">
+          <ion-select-option *ngFor="let list of array_reporter_list_of_issues">{{list.brief}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-item class="ion-margin-bottom">
+      <ion-label>Target Date</ion-label>
+      <ion-input 
+      value="{{ t_date | date: 'dd MMM yyyy' }}" id="tdate" class="ion-text-end"></ion-input>
+      <ion-popover trigger="tdate" size="cover">
+        <ng-template>
+          <ion-datetime formControlName="re_target_date" presentation="tdate" [(ngModel)]="t_date"></ion-datetime>
+        </ng-template>
+      </ion-popover>
+    </ion-item>
+<ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="breif_if" placeholder="Breif if"></ion-input>
+</ion-item>
+  <ion-button  (click)="submit()" expand="block" shape="round">{{isupdate ? "Update" : "Save"}}</ion-button>
+</form>
+</div>
+</ion-content>

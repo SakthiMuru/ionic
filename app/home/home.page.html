@@ -1,0 +1,204 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-menu-button menu ="main-menu"></ion-menu-button>
+  </ion-buttons>
+  </ion-toolbar>
+
+  <ion-item>
+      <img style="max-width: 22%;border-radius: 50%;margin-top: 1%;
+      margin-bottom: 12px;" src="assets/icon/menophoto.jpeg">
+    <ion-label style="padding-left: 5%;">
+      <h3 style="padding: 10px 10px 23px 10px;font-size: larger;">{{this.name}}</h3>
+    </ion-label>
+  </ion-item>
+</ion-header>
+<ion-content>
+  <div>
+  <!-- <ion-slides > -->
+    <!-- <ion-slide> -->
+    <ion-card *ngFor="let all_list of list_of_product">
+      <ion-card-content style="padding: 1%;">
+        <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+        <div>
+          <h2 style="padding-left: 19px;"><b>{{all_list.issueName}}</b></h2>
+          <ion-row class="ion-align-items-center">
+            <ion-col size="3">
+              <p style="text-align: center;">Raised</p>
+              <p style="text-align: center;">{{all_list.raised}}</p>
+            </ion-col>
+            <ion-col size="3">
+              <p style="text-align: center;">Progress</p>
+              <p style="text-align: center;">{{all_list.onProgress}}</p>
+            </ion-col>
+            <ion-col size="3">
+              <p style="text-align: center;">Closed</p>
+              <p style="text-align: center;">{{all_list.closed}}</p>
+            </ion-col>
+            <ion-col size="3">
+              <p style="text-align: center;">%</p>
+              <p style="text-align: center;">{{all_list.percentage}}</p>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-card-title>
+        <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+      </ion-card-content>
+    </ion-card>
+<!--  -->
+      <!-- <ion-card>
+        <ion-card-content style="padding: 1%;">
+          <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+            <div>
+              <h3><b>SCM</b></h3>
+              <ion-row class="ion-align-items-center">
+                <ion-col size="4">
+                  <p>Issue raised</p>
+                  <p style="margin-left:31%">1</p>
+                </ion-col>
+                <ion-col size="4">
+                  <p>ON progress</p>
+                  <p style="margin-left:31%">1</p>
+                </ion-col>
+                <ion-col size="3">
+                  <p>closed</p>
+                  <p style="margin-left:31%">1</p>
+                </ion-col>
+                <ion-col size="1">
+                  <p>%</p>
+                  <p style="margin-left:31%">1</p>
+                </ion-col>
+              </ion-row>
+            </div>
+            </ion-card-title>
+          <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+        </ion-card-content>
+      </ion-card>
+        <ion-card>
+          <ion-card-content style="padding: 1%;">
+            <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+              <div>
+                <h3><b>Maintenace</b></h3>
+                <ion-row class="ion-align-items-center">
+                  <ion-col size="4">
+                    <p>Issue raised</p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p>ON progress</p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p>closed</p>
+                  </ion-col>
+                </ion-row>
+              </div>
+              </ion-card-title>
+            <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-content style="padding: 1%;">
+            <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+              <div>
+                <h3><b>QC</b></h3>
+                <ion-row class="ion-align-items-center">
+                  <ion-col size="4">
+                    <p>Issue raised</p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p>ON progress</p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p>closed</p>
+                  </ion-col>
+                </ion-row>
+              </div>
+              </ion-card-title>
+            <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+        <ion-card-content style="padding: 1%;">
+          <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+            <div>
+              <h3><b>HR</b></h3>
+              <ion-row class="ion-align-items-center">
+                <ion-col size="4">
+                  <p>Issue raised</p>
+                </ion-col>
+                <ion-col size="4">
+                  <p>ON progress</p>
+                </ion-col>
+                <ion-col size="4">
+                  <p>closed</p>
+                </ion-col>
+              </ion-row>
+            </div>
+            </ion-card-title>
+          <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+        </ion-card-content>
+      </ion-card>
+      <ion-card>
+      <ion-card-content style="padding: 1%;">
+        <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+          <div>
+            <h3><b>Finance</b></h3>
+            <ion-row class="ion-align-items-center">
+              <ion-col size="4">
+                <p>Issue raised</p>
+              </ion-col>
+              <ion-col size="4">
+                <p>ON progress</p>
+              </ion-col>
+              <ion-col size="4">
+                <p>closed</p>
+              </ion-col>
+            </ion-row>
+          </div>
+          </ion-card-title>
+        <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+    <ion-card-content style="padding: 1%;">
+      <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+        <div>
+          <h3><b>SSI-H</b></h3>
+          <ion-row class="ion-align-items-center">
+            <ion-col size="4">
+              <p>Issue raised</p>
+            </ion-col>
+            <ion-col size="4">
+              <p>ON progress</p>
+            </ion-col>
+            <ion-col size="4">
+              <p>closed</p>
+            </ion-col>
+          </ion-row>
+        </div>
+        </ion-card-title>
+      <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+  <ion-card-content style="padding: 1%;">
+    <ion-card-title style="margin-bottom: -2px;" class="ion-margin-bottom">
+      <div>
+        <h3><b> SSI-K</b></h3>
+        <ion-row class="ion-align-items-center">
+          <ion-col size="4">
+            <p>Issue raised</p>
+          </ion-col>
+          <ion-col size="4">
+            <p>ON progress</p>
+          </ion-col>
+          <ion-col size="4">
+            <p>closed</p>
+          </ion-col>
+        </ion-row>
+      </div>
+      </ion-card-title>
+    <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
+  </ion-card-content>
+</ion-card> -->
+  </div>
+</ion-content>

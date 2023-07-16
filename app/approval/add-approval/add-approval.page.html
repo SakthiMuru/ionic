@@ -1,0 +1,78 @@
+<ion-header class="ion-no-border" style="background-color: #f1f5f8;">
+  <ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-icon routerLink="/approval" slot="icon-only" name="arrow-back"></ion-icon>&nbsp;&nbsp;
+    <!-- <ion-menu-button menu ="main-menu"></ion-menu-button> -->
+  </ion-buttons>
+  <ion-buttons slot="start">
+    <h6 *ngIf="isview" style="font-family: fangsong;">View Approval</h6> 
+      <h6 *ngIf="ishideview" style="font-family: fangsong;">{{isupdate ? "Update Approval" : "Add Approval"}}</h6> 
+    </ion-buttons>
+  </ion-toolbar> 
+</ion-header>
+<ion-content>
+
+  <div *ngIf="ishide">
+    <form [formGroup]="myGroup" id="form">
+      <!-- <ion-item class="ion-margin-bottom">
+    <ion-input type="text" formControlName="final_approval" placeholder="Final Approval" readonly></ion-input>
+  </ion-item> -->
+  <ion-list class="background-color">
+    <ion-item class="ion-margin-bottom">
+      <ion-select interface="popover" (ionChange)="triggerEvent($event)" formControlName="reportee_team" placeholder="Reporter Team">
+        <ion-select-option  *ngFor="let list of array_reporter_team">{{list.team}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <ion-list class="background-color">
+    <ion-item class="ion-margin-bottom" disabled="{{isDisabled}}">
+      <ion-select interface="popover" formControlName="reportee_countermeasure_brief_if" placeholder="List Of Issues">
+        <ion-select-option *ngFor="let list of array_reporter_list_of_issues">{{list.countermeasure_brief_if}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <ion-list class="background-color">
+    <ion-item class="ion-margin-bottom">
+      <ion-select interface="popover" formControlName="final_approval" readonly placeholder="Final Approval">
+        <ion-select-option value="qc">Approval</ion-select-option>
+        <ion-select-option value="production">Deny</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <ion-item class="ion-margin-bottom">
+    <ion-input type="text" formControlName="brief_if" placeholder="Brief if" readonly></ion-input>
+  </ion-item>
+</form>
+</div>
+  <div *ngIf="isShown">
+  <form [formGroup]="myGroup" id="form">
+    <ion-list class="background-color">
+      <ion-item class="ion-margin-bottom">
+        <ion-select interface="popover" (ionChange)="triggerEvent($event)" formControlName="reportee_team" placeholder="Reporter Team">
+          <ion-select-option  *ngFor="let list of array_reporter_team">{{list.team}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-list class="background-color">
+      <ion-item class="ion-margin-bottom" disabled="{{isDisabled}}">
+        <ion-select interface="popover" formControlName="reportee_countermeasure_brief_if" placeholder="List Of Issues">
+          <ion-select-option *ngFor="let list of array_reporter_list_of_issues">{{list.countermeasure_brief_if}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-list class="background-color">
+      <ion-item class="ion-margin-bottom">
+        <ion-select interface="popover" formControlName="final_approval" placeholder="Final Approval">
+          <ion-select-option value="approval">Approval</ion-select-option>
+          <ion-select-option value="deny">Deny</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+<ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="brief_if" placeholder="Brief if"></ion-input>
+</ion-item>
+  <ion-button *ngIf="isShown" (click)="submit()" expand="block" shape="round">{{isupdate ? "Update" : "Save"}}</ion-button>
+</form>
+</div>
+</ion-content>
+

@@ -1,0 +1,30 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <!-- <ion-buttons slot="start">
+    <ion-button color="primary">
+    <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+    </ion-button>
+  </ion-buttons> -->
+  <!-- <ion-buttons slot="end">
+    <ion-button routerLink="/login">log in</ion-button>
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<h1>Create your  <br/> Account</h1>
+<form [formGroup]="myGroup" id="form" novalidate>
+  <ion-item class="ion-margin-bottom">
+  <ion-input type="text" formControlName="name" placeholder="Your Name" required></ion-input>
+</ion-item>
+<ion-item class="ion-margin-bottom">
+  <ion-input type="Email" formControlName="email" placeholder="Email"></ion-input>
+</ion-item>
+<ion-item class="ion-margin-bottom">
+  <ion-input type="password" formControlName="password" placeholder="Password"></ion-input>
+</ion-item>
+  <ion-button id="join" (click)="submit()" expand="block" shape="round">Join Us</ion-button>
+  <ion-button id="login" routerLink="/login" expand="block" shape="round">log in</ion-button>
+</form>
+<p>By pressing 'Join Us' you agree to <br/> our terms & conditions.</p>
+</ion-content>

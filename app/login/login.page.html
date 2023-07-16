@@ -1,0 +1,30 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <!-- <ion-buttons slot="start"> -->
+    <!-- <ion-button color="primary"> -->
+    <!-- <ion-icon slot="icon-only" name="arrow-back"></ion-icon> -->
+    <!-- </ion-button> -->
+  <!-- </ion-buttons> -->
+  <ion-buttons slot="end">
+    <ion-button routerLink="/signup">Sign up</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<div id="header">
+<h1>Login</h1>
+<img src="assets/icon/favicon.png">
+</div>
+
+<form [formGroup]="myGroup" id="form">
+  <ion-item class="ion-margin-bottom">
+  <ion-input formControlName="email" type="text" placeholder="Email"></ion-input>
+  </ion-item>
+  <ion-item class="ion-margin-bottom">
+  <ion-input formControlName="password" type="password" placeholder="Password"></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="submit()" shape="round">Login</ion-button>
+  <p routerLink="/forgot-password">Forgot Password</p>
+</form>
+</ion-content>

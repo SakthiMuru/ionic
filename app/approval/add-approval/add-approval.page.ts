@@ -21,11 +21,13 @@ export class AddApprovalPage implements OnInit {
   date:any;
   post_method:any = [];
   myGroup!: FormGroup;
-  final_approval!: FormControl;
-  brief_if!: FormControl;
-  reportee_team!: FormControl;
-  reportee_countermeasure_brief_if!: FormControl;
+  status!: FormControl;
+  briefIf!: FormControl;
+  reporterTeamId!: FormControl;
+  reporterId!: FormControl;
+  reporteeId!: FormControl;
   visible:boolean = false;
+  reportee_visible:boolean = false;
   a_list:any;
   id:any;
   ishideview = true;
@@ -35,6 +37,12 @@ export class AddApprovalPage implements OnInit {
   filter_response :any[] = [];
   array_reporter_team :any;
   private reporter_id:any;
+  reporter_team_list:any;
+  reporter_list:any;
+  reporter_list_of_issues:any;
+  reportee_list_of_issues:any;
+  photos:any;
+  reportee_photos:any;
   constructor(public http: HttpClient,public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -64,13 +72,43 @@ export class AddApprovalPage implements OnInit {
   }
   ionViewWillEnter(){
     this.allgetlist();
+    this.report_team_list();
     }
+
+      //team get method 
+      report_team_list(){
+        this.apiService.getMethodwithToken(`/Masters/GetReporterTeamListWhichHasAvailableReport`).subscribe((response: any) => {
+        this.reporter_team_list = response;
+        });
+        }
+
     triggerEvent(data:any){  
-      this.isDisabled = false;  
-        var searchlist = this.filter_response.filter((x:any) => x.team == data.target.value);
-        this.array_reporter_list_of_issues = searchlist;
-   
+      console.log('data',data.target.value)
+      this.apiService.getMethodwithToken(`/Reporters/GetListOfReporterByReporterTeamId/${data.target.value}`).subscribe((response: any) => {
+      this.isDisabled = false; 
+      this.reporter_list_of_issues = response;  
+      console.log('response000000000',response);
+    });
     }
+    reporter_triggerEvent(data:any){  
+      
+      this.visible = true;
+      this.reporterId = data.target.value.id;
+      console.log('this.reporterId11111',this.reporterId)
+      this.photos = data.target.value.issueImage;
+      this.apiService.getMethodwithToken(`/Reportees/GetListOfReporteeByReporterId/${data.target.value.id}`).subscribe((response: any) => {
+      console.log('response111111',response);
+      this.reportee_list_of_issues = response;
+    });
+  }
+
+  reportee_triggerEvent(data:any){  
+    this.reporteeId = data.target.value.id;
+    console.log('this.reporteeId22222',this.reporteeId)
+    console.log('data111',data.target.value)
+    this.reportee_visible = true;
+    this.reportee_photos = data.target.value.resolveImage;
+}
   // alldata
   allgetlist(){ 
     this.apiService.getMethodwithToken('/Reportees').subscribe((response: any) => {
@@ -94,27 +132,29 @@ export class AddApprovalPage implements OnInit {
     this.apiService.getMethodwithToken(`/Approvals/${this.id}`).subscribe((response: any) => {
     const employee = response;
     console.log('employee',employee)
-    this.reportee_team.setValue(employee.reportee_team);
-    this.reportee_countermeasure_brief_if.setValue(employee.reportee_countermeasure_brief_if);
-    this.final_approval.setValue(employee.final_approval);
-    this.brief_if.setValue(employee.brief_if);
+    this.reporterTeamId.setValue(employee.reporterTeamId);
+    this.reporterId.setValue(employee.reporterId);
+    this.status.setValue(employee.status);
+    this.briefIf.setValue(employee.briefIf);
 
     console.log('this.filter_response1111111111111111111111',this.filter_response)
-    var searchlist = this.filter_response.filter((x:any) => x.reportee_team == employee.reporter_name);
+    var searchlist = this.filter_response.filter((x:any) => x.reporterTeamId == employee.reporter_name);
       this.array_reporter_list_of_issues = searchlist;
       console.log('this.eee',searchlist)
     });
   }
   FormControls() {
-    this.reportee_team = new FormControl('', [Validators.required]);
-    this.reportee_countermeasure_brief_if = new FormControl('', [Validators.required]);
-    this.final_approval = new FormControl('', [Validators.required]);
-    this.brief_if = new FormControl('', [Validators.required]);
+    this.reporterTeamId = new FormControl('', [Validators.required]);
+    this.reporterId = new FormControl('', [Validators.required]);
+    this.reporteeId = new FormControl('', [Validators.required]);
+    this.status = new FormControl('', [Validators.required]);
+    this.briefIf = new FormControl('', [Validators.required]);
     this.myGroup = new FormGroup({
-      reportee_team: this.reportee_team,
-      reportee_countermeasure_brief_if: this.reportee_countermeasure_brief_if,
-      final_approval: this.final_approval,
-      brief_if: this.brief_if
+      reporterTeamId: this.reporterTeamId,
+      reporterId: this.reporterId,
+      reporteeId: this.reporteeId,
+      status: this.status,
+      briefIf: this.briefIf
     });
   }
   submit() {
@@ -124,9 +164,17 @@ export class AddApprovalPage implements OnInit {
           return;
         }
         let employee = {
-          "reporter_id": this.reporter_id,
           ...this.myGroup.value
       };
+          var all_data = Object(employee);
+           var a_reporterId = Object.create(all_data.reporterId);
+           all_data.reporterId = a_reporterId.id; 
+           var a_reporteeId = Object.create(all_data.reporteeId);
+           all_data.reporteeId = a_reporteeId.id;
+           all_data.status = all_data.status == "true" ? true : false;
+
+           console.log('employee',employee)
+
         if (this.a_list == 'edit') {
           if (this.myGroup.value !== undefined) {
             this.edit(employee,this.id);

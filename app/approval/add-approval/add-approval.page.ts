@@ -43,6 +43,14 @@ export class AddApprovalPage implements OnInit {
   reportee_list_of_issues:any;
   photos:any;
   reportee_photos:any;
+  reporter_team_name:any;
+  reporter_brief:any;
+  reporter_img:any;
+  reportee_name:any;
+  reportee_brief:any;
+  reportee_img:any;
+  view_status:any;
+  view_briefIf:any;
   constructor(public http: HttpClient,public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -82,32 +90,38 @@ export class AddApprovalPage implements OnInit {
         });
         }
 
-    triggerEvent(data:any){  
-      console.log('data',data.target.value)
+    triggerEvent(data:any){
+      if(data.target.value){
+        console.log('data',data.target.value)
       this.apiService.getMethodwithToken(`/Reporters/GetListOfReporterByReporterTeamId/${data.target.value}`).subscribe((response: any) => {
       this.isDisabled = false; 
       this.reporter_list_of_issues = response;  
       console.log('response000000000',response);
     });
+      }
     }
     reporter_triggerEvent(data:any){  
-      
-      this.visible = true;
-      this.reporterId = data.target.value.id;
-      console.log('this.reporterId11111',this.reporterId)
-      this.photos = data.target.value.issueImage;
-      this.apiService.getMethodwithToken(`/Reportees/GetListOfReporteeByReporterId/${data.target.value.id}`).subscribe((response: any) => {
-      console.log('response111111',response);
-      this.reportee_list_of_issues = response;
-    });
+      if(data.target.value.id){
+        this.visible = true;
+        this.reporterId = data.target.value.id;
+        console.log('this.reporterId11111',this.reporterId)
+        this.photos = data.target.value.issueImage;
+        this.apiService.getMethodwithToken(`/Reportees/GetListOfReporteeByReporterId/${data.target.value.id}`).subscribe((response: any) => {
+        console.log('response111111',response);
+        this.reportee_list_of_issues = response;
+      });
+      }      
   }
 
   reportee_triggerEvent(data:any){  
-    this.reporteeId = data.target.value.id;
-    console.log('this.reporteeId22222',this.reporteeId)
-    console.log('data111',data.target.value)
-    this.reportee_visible = true;
-    this.reportee_photos = data.target.value.resolveImage;
+    if(data.target.value.id){
+      this.reporteeId = data.target.value.id;
+      console.log('this.reporteeId22222',this.reporteeId)
+      console.log('data111',data.target.value)
+      this.reportee_visible = true;
+      this.reportee_photos = data.target.value.resolveImage;
+    }
+    
 }
   // alldata
   allgetlist(){ 
@@ -131,7 +145,18 @@ export class AddApprovalPage implements OnInit {
     console.log('this.eee11111111')
     this.apiService.getMethodwithToken(`/Approvals/${this.id}`).subscribe((response: any) => {
     const employee = response;
-    console.log('employee',employee)
+    if(this.ishide){
+      console.log('employee',employee)
+      this.reporter_team_name = response.reporterTeam.name;
+      this.reporter_brief = response.reporter.briefIf;
+      this.reporter_img = response.reporter.issueImage;
+      this.reportee_name = response.reportee.name;
+      this.reportee_brief = response.reportee.briefIf;
+      this.reportee_img = response.reportee.resolveImage;
+      this.view_status = response.status;
+      this.view_briefIf = response.briefIf;
+    }
+    // this.reporter_briefif = response.reporter.briefIf;
     this.reporterTeamId.setValue(employee.reporterTeamId);
     this.reporterId.setValue(employee.reporterId);
     this.status.setValue(employee.status);

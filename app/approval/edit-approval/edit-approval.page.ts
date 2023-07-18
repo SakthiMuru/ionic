@@ -9,11 +9,12 @@ import { ApiService } from 'src/app/services/apiservice';
 import { HttpClient,HttpHeaders} from "@angular/common/http";
 
 @Component({
-  selector: 'app-add-approval',
-  templateUrl: './add-approval.page.html',
-  styleUrls: ['./add-approval.page.scss'],
+  selector: 'app-edit-approval',
+  templateUrl: './edit-approval.page.html',
+  styleUrls: ['./edit-approval.page.scss'],
 })
-export class AddApprovalPage implements OnInit {
+export class EditApprovalPage implements OnInit {
+  
   photo_list:any;
   isupdate = false;
   isview = false;
@@ -52,8 +53,8 @@ export class AddApprovalPage implements OnInit {
   reportee_img:any;
   view_status:any;
   view_briefIf:any;
+  employee:any;
   constructor(public http: HttpClient,public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
-
   ngOnInit() {
     this.allgetlist();
     this.FormControls();
@@ -63,19 +64,7 @@ export class AddApprovalPage implements OnInit {
     this.route.params.subscribe(params => {
       this.a_list = params['view'];
     });
-    console.log('0000000000000',this.a_list)
-    if (this.a_list !== "edit" && this.a_list !== "view") {
-      this.ishide = ! this.isShown;
-    }
-    if (this.a_list == "view") {
-      this.id_get();
-      this.ishideview = false;
-      this.isview = true;
-      this.isShown = ! this.isShown;
-    }else if (this.a_list == "edit") {
-      this.isupdate = true;
-      this.isDisabled = false;
-      this.ishide = ! this.isShown;
+   if (this.a_list == "edit") {
       this.id_get();
     } 
   }
@@ -129,14 +118,16 @@ export class AddApprovalPage implements OnInit {
         if (!acc.find((el:any) => el.team === val.team)) {
           acc.push(val);
         }
+        console.log('this.array_reporter_team',this.array_reporter_team)
         return acc;
       }, [])
     });
 }
+
   //id get method
   id_get(){
     this.apiService.getMethodwithToken(`/Approvals/${this.id}`).subscribe((response: any) => {
-    const employee = response;
+    this.employee = response;
     if(this.ishide){
       this.reporter_team_name = response.reporterTeam.name;
       this.reporter_brief = response.reporter.briefIf;
@@ -144,15 +135,9 @@ export class AddApprovalPage implements OnInit {
       this.reportee_name = response.reportee.name;
       this.reportee_brief = response.reportee.briefIf;
       this.reportee_img = response.reportee.resolveImage;
-      this.view_status = response.status == true ? "Approval" : "Deny";
-      this.view_briefIf = response.briefIf;
+      this.status.setValue(this.employee.status.toString());
+      this.briefIf.setValue(this.employee.briefIf);
     }
-    this.reporterTeamId = response.reporterTeam.name;
-    this.reporterId.setValue(employee.reporterId);
-    this.status.setValue(employee.status);
-    this.briefIf.setValue(employee.briefIf);
-    var searchlist = this.filter_response.filter((x:any) => x.reporterTeamId == employee.reporter_name);
-      this.array_reporter_list_of_issues = searchlist;
     });
   }
   FormControls() {
@@ -170,39 +155,23 @@ export class AddApprovalPage implements OnInit {
     });
   }
   submit() {
+    
         if (this.myGroup.invalid) {
           // this.message = 'Invalid data';
           return;
         }
-        let employee = {
-          ...this.myGroup.value
-      };
-          var all_data = Object(employee);
-           var a_reporterId = Object.create(all_data.reporterId);
-           all_data.reporterId = a_reporterId.id; 
-           var a_reporteeId = Object.create(all_data.reporteeId);
-           all_data.reporteeId = a_reporteeId.id;
+        
+          var all_data = Object(this.employee);
+          all_data.status = this.myGroup.value.status; 
+          all_data.briefIf = this.myGroup.value.briefIf;
            all_data.status = all_data.status == "true" ? true : false;
-
-           console.log('employee',employee)
-
         if (this.a_list == 'edit') {
           if (this.myGroup.value !== undefined) {
-            this.edit(employee,this.id);
-          } 
-        }else{
-          if (this.myGroup.value !== undefined) {
-            this.post(employee);
+            this.edit(this.employee,this.id);
           } 
         }
       }
-      //post method
-      post(list:any){
-        this.apiService.post('/Approvals',list).subscribe((response: any) => {
-          this.router.navigate(['/approval']);
-          this.myGroup.reset();
-        });
-      }
+     
       //edit method
       edit(list:any,id:any){
         this.apiService.edit(`/Approvals/${id}`,list).subscribe((response: any) => {

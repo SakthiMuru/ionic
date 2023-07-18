@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'add-approval',
     loadChildren: () => import('./add-approval/add-approval.module').then( m => m.AddApprovalPageModule)
+  },
+  {
+    path: 'edit-approval',
+    loadChildren: () => import('./edit-approval/edit-approval.module').then( m => m.EditApprovalPageModule)
   }
 ];
 

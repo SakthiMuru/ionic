@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { AddApprovalPageRoutingModule } from './add-approval-routing.module';
-import { AddApprovalPage } from './add-approval.page';
+import { EditApprovalPageRoutingModule } from './edit-approval-routing.module';
+import { EditApprovalPage } from './edit-approval.page';
 
 @NgModule({
   imports: [
@@ -11,8 +11,8 @@ import { AddApprovalPage } from './add-approval.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    AddApprovalPageRoutingModule
+    EditApprovalPageRoutingModule
   ],
-  declarations: [AddApprovalPage]
+  declarations: [EditApprovalPage]
 })
-export class AddApprovalPageModule {}
+export class EditApprovalPageModule {}

@@ -72,6 +72,10 @@ const routes: Routes = [
     loadChildren: () => import('./approval/add-approval/add-approval-routing.module').then( m => m.AddApprovalPageRoutingModule)
   },
   {
+    path: 'edit-approval/:id/:view',
+    loadChildren: () => import('./approval/edit-approval/edit-approval-routing.module').then( m => m.EditApprovalPageRoutingModule)
+  },
+  {
     path: 'add-reschedule',
     loadChildren: () => import('./reschedule/add-reschedule/add-reschedule-routing.module').then( m => m.AddReschedulePageRoutingModule)
   },

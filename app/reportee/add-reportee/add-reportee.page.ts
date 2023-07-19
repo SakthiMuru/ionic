@@ -8,6 +8,7 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browse
 import * as moment from 'moment'
 import {formatDate} from '@angular/common';
 import { ApiService } from 'src/app/services/apiservice';
+import { log } from 'util';
 @Component({
   selector: 'app-add-reportee',
   templateUrl: './add-reportee.page.html',
@@ -26,7 +27,7 @@ export class AddReporteePage implements OnInit {
   post_method:any = [];
   myGroup!: FormGroup;
   reporterTeamId!:FormControl;
-  issueName!:FormControl;
+  reporterId!:FormControl;
   name!: FormControl;
   reporteeTeamId!: FormControl;
   briefIf!: FormControl;
@@ -47,8 +48,10 @@ export class AddReporteePage implements OnInit {
   private reporter_id:any;
   all_team_list:any;
   product_all_team_list:any;
-  reporterId:any;
+  resolveImage:any;
   issueTargetDate:any;
+  issueName : any;
+  myeditData:any;
   constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -95,50 +98,72 @@ export class AddReporteePage implements OnInit {
       });
       }
 
+      
+      //team get method 
+     LoadReporterIssues(reporterTeamId:any){
+      this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+        console.log("reporterTeamId",reporterTeamId);
+        var searchlist = response.filter((x:any) => x.reporterTeamId == reporterTeamId);
+        this.array_reporter_list_of_issues = searchlist[0].reporters;
+        console.log("this.array_reporter_list_of_issues", this.array_reporter_list_of_issues);
+        this.reporterId.setValue(this.myeditData.reporterId.toString());
+        // console.log('this.array_reporter_list_of_issues',this.array_reporter_list_of_issues)
+      });
+      }
+
   ionViewWillEnter(){}
   
   //id get method
   id_get(){
     this.apiService.getMethodwithToken(`/Reportees/${this.id}`).subscribe((response: any) => {
+     
     const employee = response;
+    this.myeditData = response;
+    console.log("this.myeditData", this.myeditData);
     this.reporterTeamId.setValue(employee.reporterTeamId.toString());
-    this.issueName.setValue(employee.issueName);
+    // this.reporterId.setValue(employee.issueName);
+    this.issueName = employee.briefIf;
+    this.issueTargetDate = employee.issueTargetDate;
+    this.resolveImage = employee.resolveImage;
     this.name.setValue(employee.name);
     this.reporteeTeamId.setValue(employee.reporteeTeamId.toString());
     this.briefIf.setValue(employee.briefIf);
     this.photos = employee.resolveImage;
-    // this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
-    //   var searchlist = response.filter((x:any) => x.reporterTeamId == employee.reporterTeamId);
-    //   this.array_reporter_list_of_issues = searchlist[0].issueList;
-    // });
+    this.LoadReporterIssues(response.reporterTeamId);
+    // console.log("this.array_reporter_list_of_issues", this.array_reporter_list_of_issues);
     });
   }
   triggerEvent(data:any){
-    console.log('data',data.target.value)
+    if(data.target.value){
+      console.log('data.target.value',data.target.value)
     this.isDisabled = false;
-    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
-      console.log('response',response)
-      var searchlist = response.filter((x:any) => x.reporterTeamId == data.target.value);
-      console.log('searchlist',searchlist)
-      this.array_reporter_list_of_issues = searchlist[0].reporters;
-      console.log('this.array_reporter_list_of_issues',this.array_reporter_list_of_issues)
-    });
+    this.LoadReporterIssues(data.target.value);
+    }
   }
 
   briefifEvent(data:any){
-  this.reporterId = data.target.value.id;
-  this.issueTargetDate = data.target.value.targetDate;
+  // this.reporterId = data.target.value;
+  console.log("this.reporterId", this.reporterId);
+  console.log(this.array_reporter_list_of_issues);
+  if(this.reporterId.value){
+    const searchlist = this.array_reporter_list_of_issues.filter((x:any) => x.id == this.reporterId.value);
+    if(this.a_list != 'edit'){
+      this.issueTargetDate = searchlist[0].targetDate;
+    }
+    this.issueName = searchlist[0].briefIf;
+    console.log("this.issueTargetDate", this.issueTargetDate);
+  }
   }
   
   FormControls() {
     this.reporterTeamId = new FormControl('', [Validators.required]);
-    this.issueName = new FormControl('', [Validators.required]);
+    this.reporterId = new FormControl('', [Validators.required]);
     this.name = new FormControl('', [Validators.required]);
     this.reporteeTeamId = new FormControl('', [Validators.required]);
     this.briefIf = new FormControl('', [Validators.required]);
     this.myGroup = new FormGroup({
       reporterTeamId:this.reporterTeamId,
-      issueName:this.issueName,
+      reporterId:this.reporterId,
       name: this.name,
       reporteeTeamId: this.reporteeTeamId,
       briefIf: this.briefIf
@@ -160,12 +185,17 @@ export class AddReporteePage implements OnInit {
           let employee = {
             "reporterId":this.reporterId,
             "issueTargetDate":this.issueTargetDate,
-            "resolveImage": this.photo_list,
+            // "resolveImage": this.photos.changingThisBreaksApplicationSecurity,
+            "resolveImage": this.resolveImage,
+            "issueName":this.issueName,
             ...this.myGroup.value
         };
           var all_data = Object(employee);
-          var a_data = Object.create(all_data.issueName);
-          all_data.issueName = a_data.briefIf;
+          console.log("employee", employee);
+          
+          console.log("all_data", all_data);          
+          // var a_data = Object.create(all_data.issueName);
+          // all_data.issueName = a_data.briefIf;
         if (this.a_list == 'edit') {
           if (this.myGroup.value !== undefined) {
             this.edit(employee,this.id);
@@ -204,5 +234,6 @@ export class AddReporteePage implements OnInit {
     this.photo_list = "data:image/jpeg;base64," + imageUrl;
     this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photo_list);
     this.visible = true;
+    this.resolveImage = this.photos.changingThisBreaksApplicationSecurity;
   }
 }

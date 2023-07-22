@@ -23,8 +23,8 @@
         </ion-list>
         <ion-list class="background-color">
           <ion-item  class="ion-margin-bottom">
-            <ion-select interface="popover" (ionChange)="briefifEvent($event)" formControlName="issueName" placeholder="List Of Issues">
-              <ion-select-option *ngFor="let list of array_reporter_list_of_issues" >{{list.briefIf}}</ion-select-option>
+            <ion-select interface="popover" formControlName="reporterId" (ionChange)="briefifEvent($event)" placeholder="List Of Issues">
+              <ion-select-option *ngFor="let list of array_reporter_list_of_issues" value="{{list.id}}">{{list.briefIf}}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
@@ -59,6 +59,7 @@
     </div>
     </form>
     </div>
+    <!-- Schedule edit -->
     <div *ngIf="isShown">
       <form [formGroup]="myGroup" id="form">
         <ion-list class="background-color">
@@ -70,8 +71,8 @@
         </ion-list>
         <ion-list class="background-color">
           <ion-item disabled="{{isDisabled}}" class="ion-margin-bottom">
-            <ion-select interface="popover" formControlName="issueName" (ionChange)="briefifEvent($event)" placeholder="List Of Issues">
-              <ion-select-option *ngFor="let list of array_reporter_list_of_issues" [value]=list>{{list.briefIf}}</ion-select-option>
+            <ion-select interface="popover" formControlName="reporterId" (ionChange)="briefifEvent($event)" placeholder="List Of Issues">
+              <ion-select-option *ngFor="let list of array_reporter_list_of_issues" value="{{list.id}}">{{list.briefIf}}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>

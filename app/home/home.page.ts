@@ -14,12 +14,16 @@ export class HomePage implements OnInit {
     slidesPerView: 1.5
   }
   ngOnInit() {
+    this.all_get_data();
+  }
+  ionViewWillEnter(){
+     this.all_get_data();
+    }
+  all_get_data(){
     this.name = this.authsetvice.getname();
     console.log('name',name);
     this.apiService.getMethodwithToken('/Dashboards').subscribe((response: any) => {
       this.list_of_product = response;
-      console.log('response***********',response)
     });
   }
-
 }

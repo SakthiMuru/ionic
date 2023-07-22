@@ -47,6 +47,7 @@ export class AddReporterPage implements OnInit {
   all_responsibleteams_list :any;
   datalist: any;
   all_issues_level_list:any;
+  issueImage:any;
   constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -118,6 +119,7 @@ export class AddReporterPage implements OnInit {
     this.reporterTeamId.setValue(employee.reporterTeamId.toString());
     this.briefIf.setValue(employee.briefIf);
     this.photos = employee.issueImage;
+    this.issueImage = employee.issueImage;
     });
   }
   FormControls() {
@@ -160,7 +162,7 @@ export class AddReporterPage implements OnInit {
           this.myGroup.value.issueDate = this.d_of_report;
           this.myGroup.value.targetDate = this.t_date;
           let employee = {
-            "issueImage": this.photo_list,
+            "issueImage": this.issueImage,
             ...this.myGroup.value
         };
         // 
@@ -212,6 +214,7 @@ export class AddReporterPage implements OnInit {
     // var a_list = Object.assign({},capturedPhoto);
     // this.photoss = a_list.webPath;
     this.visible = true;
+    this.issueImage = this.photo_list;
     // this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photoss);
     // console.log('this.photos11', this.photos)
   }

@@ -58,7 +58,6 @@ export class AddReschedulePage implements OnInit {
   isupdate = false;
   isview = false;
   ishideview = true;
-  filter_response: any;
   choice = "Family";
   public arr = new Array(25);
   private reporter_id: any;
@@ -110,7 +109,6 @@ export class AddReschedulePage implements OnInit {
     this.apiService
       .getMethodwithToken(`/Reporters/IssueDetails`)
       .subscribe((response: any) => {
-        this.filter_response = response;
         this.all_team_list = response;
       });
   }

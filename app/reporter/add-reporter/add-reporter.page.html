@@ -151,7 +151,7 @@
 </ion-item>
   <div *ngIf="visible" style="text-align: center;">
     <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
-    width: 100%;height: 0%;" [src]="photos" height=100px; width=100px; alt="binging data image fadsf">
+    width: 100%;height: 0%;" [(ngModel)]="d_of_report" [src]="photos" height=100px; width=100px; alt="binging data image fadsf">
 </div>
   <ion-fab horizontal="center" *ngIf="isShown">
     <ion-fab-button (click)="addPhotoToGallery()">

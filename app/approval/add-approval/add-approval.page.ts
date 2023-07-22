@@ -137,6 +137,7 @@ export class AddApprovalPage implements OnInit {
   id_get(){
     this.apiService.getMethodwithToken(`/Approvals/${this.id}`).subscribe((response: any) => {
     const employee = response;
+    console.log("employee", employee);
     if(this.ishide){
       this.reporter_team_name = response.reporterTeam.name;
       this.reporter_brief = response.reporter.briefIf;
@@ -144,7 +145,7 @@ export class AddApprovalPage implements OnInit {
       this.reportee_name = response.reportee.name;
       this.reportee_brief = response.reportee.briefIf;
       this.reportee_img = response.reportee.resolveImage;
-      this.view_status = response.status == true ? "Approval" : "Deny";
+      this.view_status = response.status;
       this.view_briefIf = response.briefIf;
     }
     this.reporterTeamId = response.reporterTeam.name;
@@ -182,7 +183,6 @@ export class AddApprovalPage implements OnInit {
            all_data.reporterId = a_reporterId.id; 
            var a_reporteeId = Object.create(all_data.reporteeId);
            all_data.reporteeId = a_reporteeId.id;
-           all_data.status = all_data.status == "true" ? true : false;
 
            console.log('employee',employee)
 

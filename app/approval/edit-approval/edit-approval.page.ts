@@ -135,7 +135,7 @@ export class EditApprovalPage implements OnInit {
       this.reportee_name = response.reportee.name;
       this.reportee_brief = response.reportee.briefIf;
       this.reportee_img = response.reportee.resolveImage;
-      this.status.setValue(this.employee.status.toString());
+      this.status.setValue(this.employee.status);
       this.briefIf.setValue(this.employee.briefIf);
     }
     });
@@ -164,7 +164,6 @@ export class EditApprovalPage implements OnInit {
           var all_data = Object(this.employee);
           all_data.status = this.myGroup.value.status; 
           all_data.briefIf = this.myGroup.value.briefIf;
-           all_data.status = all_data.status == "true" ? true : false;
         if (this.a_list == 'edit') {
           if (this.myGroup.value !== undefined) {
             this.edit(this.employee,this.id);

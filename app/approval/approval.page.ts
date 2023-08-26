@@ -65,7 +65,7 @@ export class ApprovalPage implements OnInit {
         binaryData.push(response);
         let downloadLink = document.createElement('a');
         downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, { type: dataType }));
-        downloadLink.setAttribute('download', "downloadexcel.xlsx");
+        downloadLink.setAttribute('download', "Approvals.xlsx");
         document.body.appendChild(downloadLink);
         downloadLink.click();
       }

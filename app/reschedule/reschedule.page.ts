@@ -47,27 +47,18 @@ export class ReschedulePage implements OnInit {
   //     });
   // }
   async excel(list:any){
-  console.log('list',list);
-  var listdata = list.map((datum:any) => {
-    return {
-      'briefIf':datum.briefIf,
-      'id':datum.id,
-      'issueName':datum.issueName,
-      'issueTargetDate':datum.issueTargetDate,
-      'name':datum.name,
-      'status':datum.status
-    }
-  });
-   /* generate worksheet */
-   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(listdata, {header: [], skipHeader: false});
-
-   /* generate workbook and add the worksheet */
-   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-   /* save to file */
-   XLSX.writeFile(wb, this.fileName);
-
+    this.apiService.getMethodwithToken_Excel('/Excel/Reschedules').subscribe(
+      (response: any) => {
+        let dataType = response.type;
+        let binaryData = [];
+        binaryData.push(response);
+        let downloadLink = document.createElement('a');
+        downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, { type: dataType }));
+        downloadLink.setAttribute('download', "Reschedules.xlsx");
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+      }
+    );
   }
   fireFilterEvent(event: any) {
     if (event.target.value != '') {

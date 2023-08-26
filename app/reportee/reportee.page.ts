@@ -41,31 +41,18 @@ export class ReporteePage implements OnInit {
     }
 
   async excel(list:any){
-    console.log('list',list)
-    var listdata = list.map((datum:any) => {
-      return {
-        'briefIf':datum.briefIf,
-        'id':datum.id,
-        'issueName':datum.issueName,
-        'issueTargetDate':datum.issueTargetDate,
-        'reporteeTeam':datum.reporteeTeam.name,
-        'name':datum.name,
-        'reporter':datum.reporter.name,
-        'reporterTeam':datum.reporterTeam.name,
-        'status':datum.status
+    this.apiService.getMethodwithToken_Excel('/Excel/Reportees').subscribe(
+      (response: any) => {
+        let dataType = response.type;
+        let binaryData = [];
+        binaryData.push(response);
+        let downloadLink = document.createElement('a');
+        downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, { type: dataType }));
+        downloadLink.setAttribute('download', "Reportees.xlsx");
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
       }
-    });
-   /* generate worksheet */
-   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(listdata, {header: [], skipHeader: false});
-
-   /* generate workbook and add the worksheet */
-   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-   /* save to file */
-   XLSX.writeFile(wb, this.fileName);
-
-
+    );
   }
   fireFilterEvent(event: any) {
     if (event.target.value != '') {

@@ -70,6 +70,8 @@ export class ApiService {
     // headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'auth': `${token}` })};
     // return from(this.httpclient.get(url, optionsAuth)).pipe(map((data:any) =>{return data}));
     return from(this.httpclient.get(url)).pipe(map((data:any) =>{
+      console.log("url", url);
+      
       try {
        if (data) {
         return data
@@ -79,6 +81,10 @@ export class ApiService {
       }
     }));
     }
+    getMethodwithToken_Excel(webURL: any) {
+      const url = `${this.a_baseurl}${webURL}`;
+      return this.httpclient.get(url, { responseType: 'blob' });
+      }
     //delete method
     deleteMethodwithToken(webURL: any){
     const url = `${this.a_baseurl}${webURL}`;

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute,Router } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { File } from '@ionic-native/file/ngx';
+// import { File } from '@ionic-native/file/ngx';
 import { HttpClient,HttpHeaders} from "@angular/common/http";
 import { ApiService } from '../services/apiservice';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -58,28 +58,18 @@ export class ApprovalPage implements OnInit {
   //     });
   // }
   async excel(list:any){
-  console.log('list',list);
-  var listdata = list.map((datum:any) => {
-    return {
-      'briefIf':datum.briefIf,
-      'id':datum.id,
-      'reportee':datum.reportee.briefIf,
-      'issueName':datum.issueName,
-      'reporter':datum.reporter.briefIf,
-      'status':datum.status,
-      'reporterTeam':datum.reporterTeam.name
-    }
-  });
-// 
-const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(listdata, {header: [], skipHeader: false});
-
-const wb: XLSX.WorkBook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-XLSX.writeFile(wb, this.fileName);
-
-  // 
-
+    this.apiService.getMethodwithToken_Excel('/Excel/Approvals').subscribe(
+      (response: any) => {
+        let dataType = response.type;
+        let binaryData = [];
+        binaryData.push(response);
+        let downloadLink = document.createElement('a');
+        downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, { type: dataType }));
+        downloadLink.setAttribute('download', "downloadexcel.xlsx");
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+      }
+    );
   }
 
 

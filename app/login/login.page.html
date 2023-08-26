@@ -27,4 +27,7 @@
   <ion-button expand="block" (click)="submit()" shape="round">Login</ion-button>
   <p routerLink="/forgot-password">Forgot Password</p>
 </form>
+<div *ngIf="spinner == true">
+  <ion-spinner name="bubbles"></ion-spinner>
+</div>
 </ion-content>

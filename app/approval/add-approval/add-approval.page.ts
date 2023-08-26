@@ -7,6 +7,7 @@ import { FormGroup, FormControl, Validators, FormBuilder }  from '@angular/forms
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { ApiService } from 'src/app/services/apiservice';
 import { HttpClient,HttpHeaders} from "@angular/common/http";
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-add-approval',
@@ -52,7 +53,8 @@ export class AddApprovalPage implements OnInit {
   reportee_img:any;
   view_status:any;
   view_briefIf:any;
-  constructor(public http: HttpClient,public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
+  spinner = false;
+  constructor(private toastController: ToastController,public http: HttpClient,public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.allgetlist();
@@ -63,16 +65,19 @@ export class AddApprovalPage implements OnInit {
     this.route.params.subscribe(params => {
       this.a_list = params['view'];
     });
-    console.log('0000000000000',this.a_list)
     if (this.a_list !== "edit" && this.a_list !== "view") {
       this.ishide = ! this.isShown;
     }
     if (this.a_list == "view") {
+      this.spinner = true;
+      this.visible = true;
+      this.reportee_visible = true;
       this.id_get();
       this.ishideview = false;
       this.isview = true;
       this.isShown = ! this.isShown;
     }else if (this.a_list == "edit") {
+      this.spinner = true;
       this.isupdate = true;
       this.isDisabled = false;
       this.ishide = ! this.isShown;
@@ -86,42 +91,64 @@ export class AddApprovalPage implements OnInit {
 
       //team get method 
       report_team_list(){
+        this.spinner = true;
         this.apiService.getMethodwithToken(`/Masters/GetReporterTeamListWhichHasAvailableReport`).subscribe((response: any) => {
-        this.reporter_team_list = response;
+          this.spinner = false;
+          this.reporter_team_list = response;
         });
         }
 
     triggerEvent(data:any){
       if(data.target.value){
-        console.log('data',data.target.value)
+        this.spinner = true;
       this.apiService.getMethodwithToken(`/Reporters/GetListOfReporterByReporterTeamId/${data.target.value}`).subscribe((response: any) => {
       this.isDisabled = false; 
+      this.spinner = false;
       this.reporter_list_of_issues = response;  
     });
       }
     }
     reporter_triggerEvent(data:any){  
+      this.spinner = true;
       if(data.target.value.id){
-        this.visible = true;
+        if (data.target.value.issueImage == null) {
+          this.photos = data.target.value.issueImage;
+          this.visible = false;  
+        }else{
+          this.spinner = false;
+          this.visible = true;
+          this.photos = data.target.value.issueImage;
+        }
         this.reporterId = data.target.value.id;
-        this.photos = data.target.value.issueImage;
         this.apiService.getMethodwithToken(`/Reportees/GetListOfReporteeByReporterId/${data.target.value.id}`).subscribe((response: any) => {
-        this.reportee_list_of_issues = response;
+          this.spinner = false;
+          this.reportee_list_of_issues = response;
       });
       }      
   }
 
-  reportee_triggerEvent(data:any){  
+  reportee_triggerEvent(data:any){
+    this.spinner = true;  
     if(data.target.value.id){
       this.reporteeId = data.target.value.id;
-      this.reportee_visible = true;
-      this.reportee_photos = data.target.value.resolveImage;
+      if (data.target.value.resolveImage == null) {
+        this.spinner = false;
+        this.reportee_visible = false;
+        this.reportee_photos = data.target.value.resolveImage;  
+      }else{
+        this.spinner = false;
+        this.reportee_visible = true;
+        this.reportee_photos = data.target.value.resolveImage;
+      }
+      
     }
     
 }
   // alldata
   allgetlist(){ 
+    this.spinner = true;
     this.apiService.getMethodwithToken('/Reportees').subscribe((response: any) => {
+      this.spinner = false;
       this.filter_response = response;
       const a_id = Object.assign({},...response)
         this.reporter_id = a_id.id;
@@ -135,18 +162,36 @@ export class AddApprovalPage implements OnInit {
 }
   //id get method
   id_get(){
+    this.spinner = true;
     this.apiService.getMethodwithToken(`/Approvals/${this.id}`).subscribe((response: any) => {
     const employee = response;
-    console.log("employee", employee);
+    this.spinner = false;
     if(this.ishide){
+      if (response.reporter.issueImage == null) {
+        console.log('1111111111');
+        this.visible = false;
+        this.reporter_img = response.reporter.issueImage;
+      }else{
+        console.log('2222222');
+        this.reporter_img = response.reporter.issueImage;
+      }
+      if (response.reportee.resolveImage == null) {
+        console.log('333333333');
+        this.reportee_visible = false;
+        this.reportee_img = response.reportee.resolveImage;
+      }else{
+        console.log('4444444');
+        this.reportee_img = response.reportee.resolveImage;
+      }
       this.reporter_team_name = response.reporterTeam.name;
       this.reporter_brief = response.reporter.briefIf;
-      this.reporter_img = response.reporter.issueImage;
+      // this.reporter_img = response.reporter.issueImage;
       this.reportee_name = response.reportee.name;
       this.reportee_brief = response.reportee.briefIf;
-      this.reportee_img = response.reportee.resolveImage;
+      // this.reportee_img = response.reportee.resolveImage;
       this.view_status = response.status;
       this.view_briefIf = response.briefIf;
+      
     }
     this.reporterTeamId = response.reporterTeam.name;
     this.reporterId.setValue(employee.reporterId);
@@ -198,7 +243,10 @@ export class AddApprovalPage implements OnInit {
       }
       //post method
       post(list:any){
+        this.spinner = true;
         this.apiService.post('/Approvals',list).subscribe((response: any) => {
+          this.presentToast('Added successfully');
+          this.spinner = false;
           this.router.navigate(['/approval']);
           this.myGroup.reset();
         });
@@ -206,9 +254,20 @@ export class AddApprovalPage implements OnInit {
       //edit method
       edit(list:any,id:any){
         this.apiService.edit(`/Approvals/${id}`,list).subscribe((response: any) => {
+          this.presentToast('Updated successfully');
+          this.spinner = false;
           this.router.navigate(['/approval']);
           this.myGroup.reset();
         });
       }
-      
+      async presentToast(msg:string) {
+        const toast = await this.toastController.create({
+          message: msg, 
+          color: 'primary',
+          position: 'top',
+          cssClass:'toast-bg',
+          duration: 2000 
+        });
+        toast.present();
+      }
 }

@@ -53,11 +53,14 @@
       <ion-input type="text" formControlName="briefIf" [readonly]="true" placeholder="Countermeasure brief if"></ion-input>
     </ion-item>
     </ion-list>
-      <div style="text-align: center;">
+      <div *ngIf="visible_view" style="text-align: center;">
         <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
         width: 100%;height: 0%;" [src]="photos" height=100px; width=100px; alt="binging data image fadsf">
     </div>
     </form>
+    <div *ngIf="spinner == true">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </div>
     </div>
     <!-- Schedule edit -->
     <div *ngIf="isShown">
@@ -113,6 +116,9 @@
     </ion-fab><br><br>
       <ion-button *ngIf="reportee_isShown" (click)="submit()" expand="block" shape="round">{{isupdate ? "Update" : "Save"}}</ion-button>
     <br></form>
+    <div *ngIf="spinner == true">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </div>
     </div>
 </ion-content>
 

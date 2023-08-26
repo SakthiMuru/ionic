@@ -8,6 +8,7 @@ import { AuthService } from '../auth.service';
 })
 export class HomePage implements OnInit {
   name:any ='';
+  spinner = true;
   list_of_product: any =[{}];
   constructor(public apiService: ApiService,private authsetvice: AuthService) {}
   slidesOptions ={
@@ -21,8 +22,8 @@ export class HomePage implements OnInit {
     }
   all_get_data(){
     this.name = this.authsetvice.getname();
-    console.log('name',name);
     this.apiService.getMethodwithToken('/Dashboards').subscribe((response: any) => {
+      this.spinner = false;
       this.list_of_product = response;
     });
   }

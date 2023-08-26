@@ -9,6 +9,7 @@ import * as moment from 'moment'
 import {formatDate} from '@angular/common';
 import { ApiService } from 'src/app/services/apiservice';
 import { log } from 'util';
+import { ToastController } from '@ionic/angular';
 @Component({
   selector: 'app-add-reportee',
   templateUrl: './add-reportee.page.html',
@@ -35,9 +36,11 @@ export class AddReporteePage implements OnInit {
   id:any;
   isShown: boolean = true;
   ishide: boolean = true;
+  visible_view : boolean = true;
   reportee_ishide: boolean = true
   reportee_isShown: boolean = true;
   reportee_ishow: boolean = true;
+  issues_maping: boolean = true;
   a_list:any;
   isupdate = false;
   isview = false;
@@ -52,7 +55,8 @@ export class AddReporteePage implements OnInit {
   issueTargetDate:any;
   issueName : any;
   myeditData:any;
-  constructor(public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
+  spinner = false;
+  constructor(private toastController: ToastController,public apiService: ApiService,private sanitizer: DomSanitizer,public photoService: PhotoService,private router: Router,private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.reporter_team_list();
@@ -68,32 +72,39 @@ export class AddReporteePage implements OnInit {
      this.ishide = ! this.isShown;
    }
    if (this.a_list == "view") {
+    this.spinner = true;
      this.id_get();
      this.isview = true;
      this.ishideview = false;
      this.isShown = ! this.isShown;
    }else if (this.a_list == "edit") {
+    this.spinner = true;
     this.id_get();
     this.visible = true;
     this.isDisabled = false;
      this.isupdate = true;
-     this.ishide = ! this.isShown;
-     
+     this.ishide = ! this.isShown; 
+   }else{
+    this.issues_maping = false;
    }
     this.FormControls();
   }
 
   //reporter get method 
   reporter_team_list(){
-    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+    this.spinner = true;
+    this.apiService.getMethodwithToken(`/Reporters/IssueDetails/?allItems=${this.issues_maping}`).subscribe((response: any) => {
+      this.spinner = false;
       this.filter_response = response;
       this.all_team_list = response;
-    });
+    });    
     }
  
      //team get method 
      report_team_list(){
+      this.spinner = true;
       this.apiService.getMethodwithToken(`/Masters/ReporteeTeams`).subscribe((response: any) => {
+        this.spinner = false;
         this.product_all_team_list = response;
       });
       }
@@ -101,13 +112,12 @@ export class AddReporteePage implements OnInit {
       
       //team get method 
      LoadReporterIssues(reporterTeamId:any){
-      this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
-        console.log("reporterTeamId",reporterTeamId);
+      this.spinner = true;
+      this.apiService.getMethodwithToken(`/Reporters/IssueDetails/?allItems=${this.issues_maping}`).subscribe((response: any) => {
         var searchlist = response.filter((x:any) => x.reporterTeamId == reporterTeamId);
+        this.spinner = false;
         this.array_reporter_list_of_issues = searchlist[0].reporters;
-        console.log("this.array_reporter_list_of_issues", this.array_reporter_list_of_issues);
         this.reporterId.setValue(this.myeditData.reporterId.toString());
-        // console.log('this.array_reporter_list_of_issues',this.array_reporter_list_of_issues)
       });
       }
 
@@ -115,11 +125,11 @@ export class AddReporteePage implements OnInit {
   
   //id get method
   id_get(){
+    this.spinner = true;
     this.apiService.getMethodwithToken(`/Reportees/${this.id}`).subscribe((response: any) => {
-     
+      this.spinner = false;
     const employee = response;
     this.myeditData = response;
-    console.log("this.myeditData", this.myeditData);
     this.reporterTeamId.setValue(employee.reporterTeamId.toString());
     // this.reporterId.setValue(employee.issueName);
     this.issueName = employee.briefIf;
@@ -128,14 +138,21 @@ export class AddReporteePage implements OnInit {
     this.name.setValue(employee.name);
     this.reporteeTeamId.setValue(employee.reporteeTeamId.toString());
     this.briefIf.setValue(employee.briefIf);
-    this.photos = employee.resolveImage;
+    // this.photos = employee.resolveImage;
+    if (employee.resolveImage == null) {
+      this.visible = false;
+      this.visible_view = false;
+      this.photos = employee.resolveImage;
+    }else{
+      this.photos = employee.resolveImage;
+    }
     this.LoadReporterIssues(response.reporterTeamId);
     // console.log("this.array_reporter_list_of_issues", this.array_reporter_list_of_issues);
     });
   }
   triggerEvent(data:any){
     if(data.target.value){
-      console.log('data.target.value',data.target.value)
+    this.spinner = true;
     this.isDisabled = false;
     this.LoadReporterIssues(data.target.value);
     }
@@ -143,15 +160,12 @@ export class AddReporteePage implements OnInit {
 
   briefifEvent(data:any){
   // this.reporterId = data.target.value;
-  console.log("this.reporterId", this.reporterId);
-  console.log(this.array_reporter_list_of_issues);
   if(this.reporterId.value){
     const searchlist = this.array_reporter_list_of_issues.filter((x:any) => x.id == this.reporterId.value);
     if(this.a_list != 'edit'){
       this.issueTargetDate = searchlist[0].targetDate;
     }
     this.issueName = searchlist[0].briefIf;
-    console.log("this.issueTargetDate", this.issueTargetDate);
   }
   }
   
@@ -209,7 +223,10 @@ export class AddReporteePage implements OnInit {
       }
       //post method
       post(list:any){
+        this.spinner = true;
           this.apiService.post('/Reportees',list).subscribe((response: any) => {
+            this.spinner = false;
+            this.presentToast('Added successfully');
             this.router.navigate(['/reportee']);
             // this.myGroup.reset();
             this.visible = false;
@@ -218,7 +235,10 @@ export class AddReporteePage implements OnInit {
       }
       //edit method
       edit(list:any,id:any){
+        this.spinner = true;
         this.apiService.edit(`/Reportees/${id}`,list).subscribe((response: any) => {
+          this.spinner = false;
+          this.presentToast('Updated successfully');
           this.router.navigate(['/reportee']);
           this.photos = [];
           this.myGroup.reset();
@@ -235,5 +255,15 @@ export class AddReporteePage implements OnInit {
     this.photos = this.sanitizer.bypassSecurityTrustResourceUrl(this.photo_list);
     this.visible = true;
     this.resolveImage = this.photos.changingThisBreaksApplicationSecurity;
+  }
+  async presentToast(msg:string) {
+    const toast = await this.toastController.create({
+      message: msg, 
+      color: 'primary',
+      position: 'top',
+      cssClass:'toast-bg',
+      duration: 2000 
+    });
+    toast.present();
   }
 }

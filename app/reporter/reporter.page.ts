@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute,Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { ApiService } from '../services/apiservice';
+import { AlertController, ToastController } from '@ionic/angular';
 @Component({
   selector: 'app-reporter',
   templateUrl: './reporter.page.html',
@@ -11,10 +12,11 @@ import { ApiService } from '../services/apiservice';
 export class ReporterPage implements OnInit {
   formGroup!: FormGroup;
   name: string = '';
+  spinner = true;
   list: Array<any> = [];
   temp_list: Array<any>=[];
   fileName: string = 'SheetJS.xlsx';
-  constructor(public apiService: ApiService,private formBuilder: FormBuilder,private router: Router) { }
+  constructor(private alertCtrl:AlertController,private toastController: ToastController,public apiService: ApiService,private formBuilder: FormBuilder,private router: Router) { }
 
   ngOnInit() {
     this.allgetlist();
@@ -29,23 +31,32 @@ export class ReporterPage implements OnInit {
     }
     allgetlist(){ 
       this.apiService.getMethodwithToken('/Reporters').subscribe((response: any) => {
-        console.log('response',response)
+      this.spinner = false;
       this.list = response;
       this.temp_list = this.list;
       });
   }
  
    //delete method
-   delete(id:any){
-    this.apiService.deleteMethodwithToken(`/Reporters/${id}`).subscribe((response: any) => {
-      this.allgetlist();
-      this.temp_list = this.list;
-      });
-  }
+  
   async excel(list:any){
   console.log('list',list);
+  var listdata = list.map((datum:any) => {
+    return {
+      'briefIf':datum.briefIf,
+      'id':datum.id,
+      'issueDate':datum.issueDate,
+      'issueLevel':datum.issueLevel.name,
+      'issueLocation':datum.issueLocation,
+      'name':datum.name,
+      'reporterTeam':datum.reporterTeam.name,
+      'responsibleTeam':datum.responsibleTeam.name,
+      'status':datum.status,
+      'targetDate':datum.targetDates
+    }
+  });
    /* generate worksheet */
-   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(list, {header: [], skipHeader: false});
+   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(listdata, {header: [], skipHeader: false});
 
    /* generate workbook and add the worksheet */
    const wb: XLSX.WorkBook = XLSX.utils.book_new();
@@ -72,5 +83,39 @@ export class ReporterPage implements OnInit {
   filter(){
     // this.name = 'Nancy';
     this.list
+  }
+  async presentToast(msg:string) {
+    const toast = await this.toastController.create({
+      message: msg, 
+      color: 'primary',
+      position: 'top',
+      cssClass:'toast-bg',
+      duration: 2000 
+    });
+    toast.present();
+  }
+  async confirmdelete(id:any) {
+    let alert = await this.alertCtrl.create({
+      message: 'Do you confirm to delete?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            this.apiService.deleteMethodwithToken(`/Reporters/${id}`).subscribe((response: any) => {
+              this.presentToast('Deleted successfully');
+              this.allgetlist();
+              this.temp_list = this.list;
+              });
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }

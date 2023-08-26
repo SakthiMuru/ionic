@@ -2,34 +2,43 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute,Router } from '@angular/router';
 import * as XLSX from 'xlsx';
+import { File } from '@ionic-native/file/ngx';
 import { HttpClient,HttpHeaders} from "@angular/common/http";
 import { ApiService } from '../services/apiservice';
+import { AlertController, ToastController } from '@ionic/angular';
 @Component({
   selector: 'app-approval',
   templateUrl: './approval.page.html',
   styleUrls: ['./approval.page.scss'],
 })
 export class ApprovalPage implements OnInit {
+  arr:any[]=[];
   formGroup!: FormGroup;
   name: string = '';
   list: Array<any> = [];
   temp_list: Array<any>=[];
   fileName: string = 'SheetJS.xlsx';
   getlist:any[] =[];
-  constructor(public apiService: ApiService,public http: HttpClient,private formBuilder: FormBuilder,private router: Router) { }
+  spinner = true;
+  constructor(private toastController: ToastController,private alertCtrl:AlertController,public apiService: ApiService,public http: HttpClient,private formBuilder: FormBuilder,private router: Router) { }
 
   ngOnInit() {
     this.get();
     this.formGroup = this.formBuilder.group({
     formGroupProperty: ''
     });
+    for(var i = 0; i<100;i++)
+    {
+      var obj = {id:"id"+i.toString(),name:"name"+i.toString(),email:"email"+i.toString()};
+      this.arr.push(obj);
+    }
   }
   ionViewWillEnter(){
   this.get();
   }
   get(){ 
     this.apiService.getMethodwithToken('/Approvals').subscribe((response: any) => {
-      console.log('22222222222',response)
+    this.spinner = false;
     this.list = response;
     this.temp_list = this.list;
     });
@@ -42,24 +51,38 @@ export class ApprovalPage implements OnInit {
   // }
 
   //delete method
-  delete(id:any){
-    this.apiService.deleteMethodwithToken(`/Approvals/${id}`).subscribe((response: any) => {
-      this.get();
-      this.temp_list = this.list;
-      });
-  }
+  // delete(id:any){
+  //   this.apiService.deleteMethodwithToken(`/Approvals/${id}`).subscribe((response: any) => {
+  //     this.get();
+  //     this.temp_list = this.list;
+  //     });
+  // }
   async excel(list:any){
   console.log('list',list);
-   /* generate worksheet */
-   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(list, {header: [], skipHeader: false});
-   /* generate workbook and add the worksheet */
-   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-   /* save to file */
-   XLSX.writeFile(wb, this.fileName);
+  var listdata = list.map((datum:any) => {
+    return {
+      'briefIf':datum.briefIf,
+      'id':datum.id,
+      'reportee':datum.reportee.briefIf,
+      'issueName':datum.issueName,
+      'reporter':datum.reporter.briefIf,
+      'status':datum.status,
+      'reporterTeam':datum.reporterTeam.name
+    }
+  });
+// 
+const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(listdata, {header: [], skipHeader: false});
 
+const wb: XLSX.WorkBook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+XLSX.writeFile(wb, this.fileName);
+
+  // 
 
   }
+
+
   fireFilterEvent(event: any) {
     if (event.target.value != '') {
       console.log('a_list',event.target.value)      
@@ -76,5 +99,39 @@ export class ApprovalPage implements OnInit {
   filter(){
     // this.name = 'Nancy';
     this.list
+  }
+  async presentToast(msg:string) {
+    const toast = await this.toastController.create({
+      message: msg, 
+      color: 'primary',
+      position: 'top',
+      cssClass:'toast-bg',
+      duration: 2000 
+    });
+    toast.present();
+  }
+  async confirmdelete(id:any) {
+    let alert = await this.alertCtrl.create({
+      message: 'Do you confirm to delete?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            this.apiService.deleteMethodwithToken(`/Approvals/${id}`).subscribe((response: any) => {
+              this.presentToast('Deleted successfully');
+              this.get();
+              this.temp_list = this.list;
+              });
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }

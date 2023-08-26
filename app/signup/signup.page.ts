@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, FormBuilder }  from '@angular/forms
 import {ApiService} from '../services/apiservice';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { map, of } from 'rxjs';
+import { ToastController } from '@ionic/angular';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.page.html',
@@ -16,7 +17,7 @@ export class SignupPage implements OnInit {
   storage:any;
   jwtHelper: any;
   userInfo: any;
-  constructor(public api: ApiService,private router: Router) {
+  constructor(private toastController: ToastController,public api: ApiService,private router: Router) {
     this.FormControls();
    }
 
@@ -33,7 +34,7 @@ export class SignupPage implements OnInit {
       post(data:any){
         console.log('3434',data)
         this.api.registation_without_token('/users/registration',data).subscribe((response: any) => {
-          // this.storage.set('access_token',response);
+          this.presentToast('Registration successfully');
           console.log('response',response)
           this.myGroup.reset();
           this.router.navigate(['/login']);
@@ -63,5 +64,15 @@ export class SignupPage implements OnInit {
           email: this.email,
           password: this.password,
         });
+      }
+      async presentToast(msg:string) {
+        const toast = await this.toastController.create({
+          message: msg, 
+          color: 'primary',
+          position: 'top',
+          cssClass:'toast-bg',
+          duration: 2000 
+        });
+        toast.present();
       }
 }

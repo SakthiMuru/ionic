@@ -16,21 +16,20 @@
     <ion-item class="ion-margin-bottom">
       <ion-input type="text" [readonly]="true" formControlName="reporterId" [(ngModel)]="reporter_brief" placeholder="Reporter Issue"></ion-input>
     </ion-item>
-    <div  style="text-align: center;">
+    <div *ngIf="visible" style="text-align: center;">
       <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
       width: 100%;height: 0%;" [src]="reporter_img" height=100px; width=100px; alt="binging data image fadsf">
   </div>
     <ion-item class="ion-margin-bottom">
         <ion-input type="text" [readonly]="true" [(ngModel)]="reportee_name" formControlName="reporteeId" placeholder="Reportee Name"></ion-input>
       </ion-item>
-      <div  style="text-align: center;">
+      <div *ngIf="reportee_visible" style="text-align: center;">
         <img style="background: #f1f5f8;padding: 15px 10px 20px 10px;border-radius: 28px 28px 28px 28px;
         width: 100%;height: 0%;" [src]="reportee_img" height=100px; width=100px; alt="binging data image fadsf">
     </div>
     <ion-list class="background-color">
       <ion-item class="ion-margin-bottom">
         <ion-select interface="popover" formControlName="status" placeholder="Final Approval">
-          <ion-select-option value="Pending">Pending</ion-select-option>
           <ion-select-option value="Approve">Approval</ion-select-option>
           <ion-select-option value="Deny">Deny</ion-select-option>
         </ion-select>
@@ -40,6 +39,9 @@
   <ion-input type="text" formControlName="briefIf" placeholder="Brief if"></ion-input>
 </ion-item>
   <ion-button (click)="submit()" expand="block" shape="round">Update</ion-button><br>
-</form>
+</form><br>
+<div *ngIf="spinner == true">
+  <ion-spinner name="bubbles"></ion-spinner>
+</div>
 </ion-content>
 

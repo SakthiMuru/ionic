@@ -45,6 +45,9 @@
         <ion-progress-bar value="0.5" color="custom"></ion-progress-bar>
       </ion-card-content>
     </ion-card>
+    <div *ngIf="spinner == true">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </div>
 <!--  -->
       <!-- <ion-card>
         <ion-card-content style="padding: 1%;">

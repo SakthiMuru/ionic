@@ -22,6 +22,7 @@ import {
 import { formatDate } from "@angular/common";
 import { ApiService } from "src/app/services/apiservice";
 import { log } from "console";
+import { ToastController } from "@ionic/angular";
 export interface UserPhoto {
   filepath: string;
   webviewPath: string;
@@ -54,6 +55,7 @@ export class AddReschedulePage implements OnInit {
   reportee_ishide: boolean = true;
   reportee_isShown: boolean = true;
   reportee_ishow: boolean = true;
+  visible_view: boolean = true;
   a_list: any;
   isupdate = false;
   isview = false;
@@ -67,12 +69,9 @@ export class AddReschedulePage implements OnInit {
   issueTargetDate: any;
   issueName: any;
   resolveImage: any;
-  constructor(
-    public apiService: ApiService,
-    private sanitizer: DomSanitizer,
-    public photoService: PhotoService,
-    private router: Router,
-    private route: ActivatedRoute
+  spinner = false;
+  constructor(private toastController: ToastController,public apiService: ApiService,private sanitizer: DomSanitizer,
+    public photoService: PhotoService,private router: Router,private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -90,11 +89,13 @@ export class AddReschedulePage implements OnInit {
       this.ishide = !this.isShown;
     }
     if (this.a_list == "view") {
+      this.spinner = true;
       this.id_get();
       this.isview = true;
       this.ishideview = false;
       this.isShown = !this.isShown;
     } else if (this.a_list == "edit") {
+      this.spinner = true;
       this.id_get();
       this.visible = true;
       this.isDisabled = false;
@@ -106,42 +107,29 @@ export class AddReschedulePage implements OnInit {
 
   //reporter get method
   reporter_team_list() {
-    this.apiService
-      .getMethodwithToken(`/Reporters/IssueDetails`)
-      .subscribe((response: any) => {
-        this.all_team_list = response;
+    this.spinner = true;
+    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+      this.spinner = false;
+      this.all_team_list = response;
       });
   }
 
   //team get method
   report_team_list() {
-    this.apiService
-      .getMethodwithToken(`/Masters/ReporteeTeams`)
-      .subscribe((response: any) => {
-        this.product_all_team_list = response;
+    this.spinner = true;
+    this.apiService.getMethodwithToken(`/Masters/ReporteeTeams`).subscribe((response: any) => {
+      this.spinner = false;
+      this.product_all_team_list = response;
       });
   }
 
   LoadReporterIssues(reporterTeamId: any) {
-    this.apiService
-      .getMethodwithToken(`/Reporters/IssueDetails`)
-      .subscribe((response: any) => {
-        console.log("reporterTeamId", reporterTeamId);
-        var searchlist = response.filter(
-          (x: any) => x.reporterTeamId == reporterTeamId
-        );
+    this.spinner = true;
+    this.apiService.getMethodwithToken(`/Reporters/IssueDetails`).subscribe((response: any) => {
+        var searchlist = response.filter((x: any) => x.reporterTeamId == reporterTeamId);
+        this.spinner = false;
         this.array_reporter_list_of_issues = searchlist[0].reporters;
-        console.log(
-          "this.array_reporter_list_of_issues",
-          this.array_reporter_list_of_issues
-        );
-        console.log(
-          "this.db_reschedule.reporterId",
-          this.db_reschedule.reporterId.toString()
-        );
-
         this.reporterId.setValue(this.db_reschedule.reporterId.toString());
-        // console.log('this.array_reporter_list_of_issues',this.array_reporter_list_of_issues)
       });
   }
 
@@ -149,18 +137,11 @@ export class AddReschedulePage implements OnInit {
 
   //id get method
   id_get() {
-    console.group("rest");
-    console.log("firing");
-    // console.log(this);
-    this.apiService
-      .getMethodwithToken(`/Reportees/${this.id}`)
-      .subscribe((response: any) => {
+    this.spinner = true;
+    this.apiService.getMethodwithToken(`/Reportees/${this.id}`).subscribe((response: any) => {
+        this.spinner = false;
         const employee = response;
         this.db_reschedule = response;
-        console.log(
-          "this.db_reschedule",
-          this.db_reschedule
-        );
         if (this.a_list == "edit") {
           this.reporterTeamId.setValue(employee.reporterTeamId.toString());
           this.name.setValue(employee.name);
@@ -168,7 +149,14 @@ export class AddReschedulePage implements OnInit {
           this.reporteeTeamId.setValue(employee.reporteeTeamId.toString());
           this.briefIf.setValue(employee.briefIf);
           this.resolveImage = employee.resolveImage;
-          this.photos = employee.resolveImage;
+          // this.photos = employee.resolveImage;
+          if (employee.resolveImage == null) {
+            this.visible = false;
+            this.visible_view =false;
+            this.photos = employee.resolveImage;
+          }else{
+            this.photos = employee.resolveImage;
+          }
           this.issueName = employee.issueName;
           this.array_reporter_list_of_issues = [employee.reporter];
           this.reporterId.setValue(employee.reporterId.toString());
@@ -179,7 +167,14 @@ export class AddReschedulePage implements OnInit {
           this.reporteeTeamId.setValue(employee.reporteeTeamId.toString());
           this.briefIf.setValue(employee.briefIf);
           this.resolveImage = employee.resolveImage;
-          this.photos = employee.resolveImage;
+          // this.photos = employee.resolveImage;
+          if (employee.resolveImage == null) {
+            this.visible = false;
+            this.visible_view =false;
+            this.photos = employee.resolveImage;
+          }else{
+            this.photos = employee.resolveImage;
+          }
           this.issueName = employee.issueName;
           this.array_reporter_list_of_issues = [employee.reporter];
           this.reporterId.setValue(employee.reporterId.toString());
@@ -188,8 +183,8 @@ export class AddReschedulePage implements OnInit {
       });
   }
   triggerEvent(data: any) {
-    console.log("data", data.target.value);
     if (data.target.value) {
+      this.spinner = true;
       this.isDisabled = false;
       this.LoadReporterIssues(data.target.value);
     }
@@ -220,6 +215,7 @@ export class AddReschedulePage implements OnInit {
   }
 
   submit() {
+    this.myGroup.value.issueTargetDate = this.t_date;
     if (this.myGroup.invalid) {
       // this.message = 'Invalid data';
       return;
@@ -239,19 +235,22 @@ export class AddReschedulePage implements OnInit {
       };
       if (this.a_list == "edit") {
         if (this.myGroup.value !== undefined) {
-          console.log("employee", employee);
+         
           this.edit(employee, this.id);
         }
       } else {
         if (this.myGroup.value !== undefined) {
-          // this.post(employee);
+           this.post(employee);
         }
       }
     }
   }
   //post method
   post(list: any) {
+    this.spinner = true;
     this.apiService.post("/Reportees", list).subscribe((response: any) => {
+      this.spinner = false;
+      this.presentToast('Added successfully');
       this.router.navigate(["/reportee"]);
       // this.myGroup.reset();
       this.visible = false;
@@ -260,9 +259,10 @@ export class AddReschedulePage implements OnInit {
   }
   //edit method
   edit(list: any, id: any) {
-    this.apiService
-      .edit(`/Reportees/${id}`, list)
-      .subscribe((response: any) => {
+    this.spinner = false;
+    this.apiService.edit(`/Reportees/${id}`, list).subscribe((response: any) => {
+        this.spinner = false;
+        this.presentToast('Updated successfully');
         this.router.navigate(["/reportee"]);
         this.photos = [];
         this.myGroup.reset();
@@ -281,5 +281,15 @@ export class AddReschedulePage implements OnInit {
     );
     this.visible = true;
     this.resolveImage = this.photos.changingThisBreaksApplicationSecurity;
+  }
+  async presentToast(msg:string) {
+    const toast = await this.toastController.create({
+      message: msg, 
+      color: 'primary',
+      position: 'top',
+      cssClass:'toast-bg',
+      duration: 2000 
+    });
+    toast.present();
   }
 }

@@ -70,3 +70,16 @@ ion-content{
     margin-top: 3%;
   }
 }
+ion-spinner {
+  --color: #54dc98;
+  position: fixed;
+  z-index: 999;
+  height: 5em;
+  width: em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}

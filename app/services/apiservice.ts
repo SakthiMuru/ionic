@@ -8,8 +8,14 @@ import { from, Observable } from 'rxjs';
 })
 export class ApiService {
   public authToken: string='';
+  
+  //local .net 
   private a_baseurl:string ="https://localhost:7018/api";
+  //live base url .net
+  // private a_baseurl:string = "https://singsungapi.azurewebsites.net/api";
+  // local nodejs
   // private a_baseurl:string ="http://localhost:2000";
+  //node js
   // private a_baseurl:string ="https://dull-turtleneck-shirt-pike.cyclic.app";
   private headers: any = {
     headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'auth': localStorage.getItem('token')}
